@@ -5,6 +5,7 @@ import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LoadingState, EmptyState } from "@/components/site/States";
+import { FormField } from "@/components/site/InquiryForm";
 import { supabase } from "@/integrations/supabase/client";
 import { useCartDetails } from "@/lib/use-cart-details";
 import { computeShipping, computeSubtotal, formatEGP, isValidEgyptPhone, normalizeEgyptPhone } from "@/lib/pricing";
@@ -105,39 +106,31 @@ function CheckoutPage() {
       </div>
     );
 
-  const Field = ({ k, label, children }: { k: keyof Form; label: string; children: React.ReactNode }) => (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-medium">{label}</span>
-      {children}
-      {errors[k] && <span className="mt-1 block text-xs text-destructive">{errors[k]}</span>}
-    </label>
-  );
-
   return (
     <div className="container-page py-12 md:py-20">
       <h1 className="text-3xl font-semibold">{t("إتمام الطلب", "Checkout")}</h1>
       <form onSubmit={submit} noValidate className="mt-10 grid gap-10 lg:grid-cols-[1fr_22rem]">
         <div className="space-y-5">
-          <Field k="name" label={t("الاسم بالكامل", "Full name")}>
+          <FormField error={errors.name} label={t("الاسم بالكامل", "Full name")}>
             <input className="field" value={form.name} onChange={set("name")} autoComplete="name" aria-invalid={!!errors.name} />
-          </Field>
-          <Field k="phone" label={t("رقم الموبايل", "Mobile number")}>
+          </FormField>
+          <FormField error={errors.phone} label={t("رقم الموبايل", "Mobile number")}>
             <input className="field text-start" dir="ltr" inputMode="tel" placeholder="01xxxxxxxxx" value={form.phone} onChange={set("phone")} autoComplete="tel" aria-invalid={!!errors.phone} />
-          </Field>
-          <Field k="city" label={t("المدينة / المحافظة", "City")}>
+          </FormField>
+          <FormField error={errors.city} label={t("المدينة / المحافظة", "City")}>
             <select className="field" value={form.city} onChange={set("city")} aria-invalid={!!errors.city}>
               <option value="">{t("اختار المدينة", "Select city")}</option>
               {zones.data?.map((z) => (
                 <option key={z.id} value={z.city}>{z.city}</option>
               ))}
             </select>
-          </Field>
-          <Field k="address" label={t("العنوان بالتفصيل", "Full address")}>
+          </FormField>
+          <FormField error={errors.address} label={t("العنوان بالتفصيل", "Full address")}>
             <textarea className="field h-24 py-2" value={form.address} onChange={set("address")} autoComplete="street-address" aria-invalid={!!errors.address} />
-          </Field>
-          <Field k="notes" label={t("ملاحظات (اختياري)", "Notes (optional)")}>
+          </FormField>
+          <FormField error={errors.notes} label={t("ملاحظات (اختياري)", "Notes (optional)")}>
             <textarea className="field h-20 py-2" value={form.notes} onChange={set("notes")} />
-          </Field>
+          </FormField>
         </div>
 
         <aside className="h-fit space-y-3 border bg-secondary p-6 text-sm">
