@@ -53,7 +53,7 @@ function Index() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/60 to-transparent max-md:bg-primary/70" />
         <div className="container-page relative flex min-h-[620px] md:min-h-[80vh] md:max-h-[860px] flex-col justify-center py-20">
-          <div className="max-w-xl rtl:ms-auto rtl:md:me-auto rtl:md:ms-0">
+          <div className="max-w-xl rtl:ms-auto">
             <Logo className="text-3xl md:text-4xl" />
             <h1 className="mt-10 text-4xl font-semibold leading-tight md:text-6xl">
               {s?.hero_title || t("سائل غسيل أطباق بيوريفا", "PUREVA Dishwashing Liquid")}
