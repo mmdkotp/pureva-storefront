@@ -8,3 +8,10 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Architecture rules
+- Orders are created only via the `place_order` database function; it recomputes prices, shipping and stock server-side, so never trust client totals.
+- Store content (prices, sizes, shipping fees, contact info, banner, policies) lives in the database and is edited from /admin; never hardcode business values in components.
+- Text starting with `[مؤقت]` is a placeholder and is hidden from shoppers (`isPlaceholder` in src/lib/store.ts).
+- Admin access is the `admin` role in `user_roles`; the first signed-up account becomes admin via a trigger.
+- UI strings use `t(ar, en)` from src/lib/i18n.tsx; Arabic RTL is the default.
