@@ -22,7 +22,7 @@ const contactSchema = z.object({ ...base, message: z.string().trim().min(5, "Ø§Ù
 
 type Values = Record<string, string>;
 
-export function FormField({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
+export function FormField({ label, error, children }: { label: string; error?: string | undefined; children: ReactNode }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-sm font-medium">{label}</span>
@@ -52,7 +52,7 @@ export function InquiryForm({ kind }: { kind: "wholesale" | "contact" }) {
     }
     setErrors({});
     setState("sending");
-    const d = parsed.data as Values;
+    const d = parsed.data as { name: string; phone: string; city?: string; message?: string; business_name?: string; business_type?: string; quantities?: string };
     const { error } = await supabase.from("inquiries").insert({
       kind,
       name: d.name,

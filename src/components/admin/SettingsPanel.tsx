@@ -47,17 +47,17 @@ export function SettingsPanel() {
 
   const save = async () => {
     const th = threshold.trim() === "" ? null : Number(threshold);
-    if (th != null && (isNaN(th) || th < 0)) return toast.error("حد الشحن المجاني غير صحيح");
-    if (s.whatsapp && !isValidEgyptPhone(s.whatsapp)) return toast.error("رقم واتساب غير صحيح");
+    if (th != null && (isNaN(th) || th < 0)) return void toast.error("حد الشحن المجاني غير صحيح");
+    if (s.whatsapp && !isValidEgyptPhone(s.whatsapp)) return void toast.error("رقم واتساب غير صحيح");
     for (const k of ["hero_image_url", "facebook_url", "instagram_url", "tiktok_url"] as const) {
-      if (s[k] && !/^https:\/\//.test(s[k]!)) return toast.error("الروابط لازم تبدأ بـ https://");
+      if (s[k] && !/^https:\/\//.test(s[k]!)) return void toast.error("الروابط لازم تبدأ بـ https://");
     }
     setSaving(true);
     const { id: _id, updated_at: _u, ...rest } = s;
     const clean = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, typeof v === "string" && v.trim() === "" ? null : v]));
     const { error } = await supabase.from("store_settings").update({ ...clean, free_shipping_threshold: th }).eq("id", 1);
     setSaving(false);
-    if (error) return toast.error("تعذر الحفظ");
+    if (error) return void toast.error("تعذر الحفظ");
     toast.success("تم حفظ الإعدادات");
     qc.invalidateQueries({ queryKey: ["settings"] });
   };

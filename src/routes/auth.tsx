@@ -30,18 +30,18 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMsg(null);
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setMsg({ type: "error", text: "بريد إلكتروني غير صحيح" });
-    if (password.length < 8) return setMsg({ type: "error", text: "كلمة المرور 8 حروف على الأقل" });
+    if (!/^\S+@\S+\.\S+$/.test(email)) return void setMsg({ type: "error", text: "بريد إلكتروني غير صحيح" });
+    if (password.length < 8) return void setMsg({ type: "error", text: "كلمة المرور 8 حروف على الأقل" });
     setBusy(true);
     if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
-      if (error) return setMsg({ type: "error", text: "البريد أو كلمة المرور غير صحيحة" });
+      if (error) return void setMsg({ type: "error", text: "البريد أو كلمة المرور غير صحيحة" });
       navigate({ to: "/admin" });
     } else {
       const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/admin" } });
       setBusy(false);
-      if (error) return setMsg({ type: "error", text: error.message });
+      if (error) return void setMsg({ type: "error", text: error.message });
       setMsg({ type: "info", text: "تم إنشاء الحساب. افتح بريدك واضغط على رابط التأكيد، ثم سجّل الدخول." });
       setMode("in");
     }

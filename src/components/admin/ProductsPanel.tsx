@@ -38,7 +38,7 @@ export function ProductsPanel() {
   const addProduct = async () => {
     const slug = `product-${Date.now().toString(36)}`;
     const { error } = await supabase.from("products").insert({ slug, name_ar: "منتج جديد", active: false, sort_order: (products.data?.length ?? 0) + 1 });
-    if (error) return toast.error("تعذر إضافة المنتج");
+    if (error) return void toast.error("تعذر إضافة المنتج");
     refresh();
   };
 
@@ -70,10 +70,10 @@ function ProductEditor({ product, wholesale, onSaved }: { product: Product; whol
   const set = (k: keyof Product) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setP({ ...p, [k]: e.target.value });
 
   const save = async () => {
-    if (!/^[a-z0-9-]+$/.test(p.slug)) return toast.error("الرابط (slug) حروف إنجليزية صغيرة وأرقام وشرطة فقط");
-    if (p.name_ar.trim().length < 2) return toast.error("اكتب اسم المنتج");
+    if (!/^[a-z0-9-]+$/.test(p.slug)) return void toast.error("الرابط (slug) حروف إنجليزية صغيرة وأرقام وشرطة فقط");
+    if (p.name_ar.trim().length < 2) return void toast.error("اكتب اسم المنتج");
     const imgs = images.split("\n").map((s) => s.trim()).filter(Boolean);
-    if (imgs.some((u) => !/^https:\/\//.test(u))) return toast.error("روابط الصور لازم تبدأ بـ https://");
+    if (imgs.some((u) => !/^https:\/\//.test(u))) return void toast.error("روابط الصور لازم تبدأ بـ https://");
     setSaving(true);
     const { error } = await supabase.from("products").update({
       slug: p.slug, name_ar: p.name_ar, name_en: p.name_en, short_ar: p.short_ar, description_ar: p.description_ar,
@@ -81,7 +81,7 @@ function ProductEditor({ product, wholesale, onSaved }: { product: Product; whol
       benefits: benefits.split("\n").map((s) => s.trim()).filter(Boolean), images: imgs,
     }).eq("id", p.id);
     setSaving(false);
-    if (error) return toast.error("تعذر الحفظ: " + error.message);
+    if (error) return void toast.error("تعذر الحفظ: " + error.message);
     toast.success("تم حفظ المنتج");
     onSaved();
   };
@@ -89,13 +89,13 @@ function ProductEditor({ product, wholesale, onSaved }: { product: Product; whol
   const remove = async () => {
     if (!confirm("حذف المنتج نهائياً؟")) return;
     const { error } = await supabase.from("products").delete().eq("id", p.id);
-    if (error) return toast.error("تعذر الحذف");
+    if (error) return void toast.error("تعذر الحذف");
     onSaved();
   };
 
   const addVariant = async () => {
     const { error } = await supabase.from("product_variants").insert({ product_id: p.id, size_label: "حجم جديد", sort_order: p.product_variants.length + 1 });
-    if (error) return toast.error("تعذر الإضافة");
+    if (error) return void toast.error("تعذر الإضافة");
     onSaved();
   };
 
@@ -132,7 +132,7 @@ function ProductEditor({ product, wholesale, onSaved }: { product: Product; whol
   );
 }
 
-function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesale?: WP; onSaved: () => void }) {
+function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesale?: WP | undefined; onSaved: () => void }) {
   const [label, setLabel] = useState(variant.size_label);
   const [price, setPrice] = useState(variant.price?.toString() ?? "");
   const [stock, setStock] = useState(String(variant.stock));
@@ -142,22 +142,22 @@ function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesa
 
   const save = async () => {
     const pr = numOrNull(price), st = Number(stock), wp = numOrNull(wPrice), wm = Number(wMin);
-    if (!label.trim()) return toast.error("اكتب الحجم");
-    if ((pr != null && (isNaN(pr) || pr < 0)) || isNaN(st) || st < 0 || !Number.isInteger(st)) return toast.error("السعر أو المخزون غير صحيح");
-    if (wp != null && (isNaN(wp) || wp < 0 || !Number.isInteger(wm) || wm < 1)) return toast.error("سعر الجملة غير صحيح");
+    if (!label.trim()) return void toast.error("اكتب الحجم");
+    if ((pr != null && (isNaN(pr) || pr < 0)) || isNaN(st) || st < 0 || !Number.isInteger(st)) return void toast.error("السعر أو المخزون غير صحيح");
+    if (wp != null && (isNaN(wp) || wp < 0 || !Number.isInteger(wm) || wm < 1)) return void toast.error("سعر الجملة غير صحيح");
     const { error } = await supabase.from("product_variants").update({ size_label: label.trim(), price: pr, stock: st, active }).eq("id", variant.id);
-    if (error) return toast.error("تعذر الحفظ");
+    if (error) return void toast.error("تعذر الحفظ");
     const w = wp == null
       ? await supabase.from("wholesale_prices").delete().eq("variant_id", variant.id)
       : await supabase.from("wholesale_prices").upsert({ variant_id: variant.id, price: wp, min_quantity: wm });
-    if (w.error) return toast.error("تعذر حفظ سعر الجملة");
+    if (w.error) return void toast.error("تعذر حفظ سعر الجملة");
     toast.success("تم الحفظ");
     onSaved();
   };
   const remove = async () => {
     if (!confirm("حذف هذا الحجم؟")) return;
     const { error } = await supabase.from("product_variants").delete().eq("id", variant.id);
-    if (error) return toast.error("تعذر الحذف");
+    if (error) return void toast.error("تعذر الحذف");
     onSaved();
   };
 
