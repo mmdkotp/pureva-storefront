@@ -9,8 +9,9 @@ import { LoadingState, ErrorState } from "@/components/site/States";
 import { FormField } from "@/components/site/InquiryForm";
 import { settingsQuery } from "@/lib/store";
 import { isValidEgyptPhone } from "@/lib/pricing";
+import type { Tables } from "@/integrations/supabase/types";
 
-type S = NonNullable<Awaited<ReturnType<typeof settingsQuery.queryFn & {}>>>;
+type S = Tables<"store_settings">;
 
 const textFields: { k: keyof S; label: string; ltr?: boolean; area?: boolean }[] = [
   { k: "hero_title", label: "عنوان الصفحة الرئيسية" },
