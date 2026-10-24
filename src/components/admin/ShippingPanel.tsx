@@ -26,9 +26,9 @@ export function ShippingPanel() {
   const [newCity, setNewCity] = useState("");
 
   const add = async () => {
-    if (newCity.trim().length < 2) return toast.error("اكتب اسم المدينة");
+    if (newCity.trim().length < 2) return void toast.error("اكتب اسم المدينة");
     const { error } = await supabase.from("shipping_zones").insert({ city: newCity.trim(), sort_order: (zones.data?.length ?? 0) + 1 });
-    if (error) return toast.error(error.code === "23505" ? "المدينة موجودة بالفعل" : "تعذر الإضافة");
+    if (error) return void toast.error(error.code === "23505" ? "المدينة موجودة بالفعل" : "تعذر الإضافة");
     setNewCity("");
     refresh();
   };
@@ -56,16 +56,16 @@ function ZoneRow({ zone, onSaved }: { zone: Zone; onSaved: () => void }) {
   const [active, setActive] = useState(zone.active);
   const save = async () => {
     const f = fee.trim() === "" ? null : Number(fee);
-    if (f != null && (isNaN(f) || f < 0)) return toast.error("رسوم غير صحيحة");
+    if (f != null && (isNaN(f) || f < 0)) return void toast.error("رسوم غير صحيحة");
     const { error } = await supabase.from("shipping_zones").update({ city: city.trim(), fee: f, active }).eq("id", zone.id);
-    if (error) return toast.error("تعذر الحفظ");
+    if (error) return void toast.error("تعذر الحفظ");
     toast.success("تم الحفظ");
     onSaved();
   };
   const remove = async () => {
     if (!confirm("حذف المنطقة؟")) return;
     const { error } = await supabase.from("shipping_zones").delete().eq("id", zone.id);
-    if (error) return toast.error("تعذر الحذف");
+    if (error) return void toast.error("تعذر الحذف");
     onSaved();
   };
   return (

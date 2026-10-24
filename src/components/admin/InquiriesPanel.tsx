@@ -20,7 +20,7 @@ export function InquiriesPanel() {
   });
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("inquiries").update({ status }).eq("id", id);
-    if (error) return toast.error("تعذر التحديث");
+    if (error) return void toast.error("تعذر التحديث");
     qc.invalidateQueries({ queryKey: ["admin-inquiries"] });
   };
 

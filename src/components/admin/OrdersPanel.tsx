@@ -28,7 +28,7 @@ export function OrdersPanel() {
 
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-    if (error) return toast.error("تعذر تحديث الحالة");
+    if (error) return void toast.error("تعذر تحديث الحالة");
     toast.success("تم تحديث الحالة");
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
   };
