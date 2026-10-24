@@ -80,23 +80,23 @@ export function InquiryForm({ kind }: { kind: "wholesale" | "contact" }) {
   return (
     <form onSubmit={submit} noValidate className="grid gap-5 sm:grid-cols-2">
       {kind === "wholesale" && (
-        <FormField label={t("اسم النشاط التجاري", "Business name")} error={errors.business_name}>
-          <input className="field" value={v.business_name ?? ""} onChange={set("business_name")} />
+        <FormField label={t("اسم النشاط التجاري", "Business name")} error={errors["business_name"]}>
+          <input className="field" value={v["business_name"] ?? ""} onChange={set("business_name")} />
         </FormField>
       )}
-      <FormField label={t("اسم المسؤول", "Contact name")} error={errors.name}>
-        <input className="field" value={v.name ?? ""} onChange={set("name")} autoComplete="name" />
+      <FormField label={t("اسم المسؤول", "Contact name")} error={errors["name"]}>
+        <input className="field" value={v["name"] ?? ""} onChange={set("name")} autoComplete="name" />
       </FormField>
-      <FormField label={t("رقم الموبايل", "Mobile")} error={errors.phone}>
-        <input className="field text-start" dir="ltr" inputMode="tel" placeholder="01xxxxxxxxx" value={v.phone ?? ""} onChange={set("phone")} />
+      <FormField label={t("رقم الموبايل", "Mobile")} error={errors["phone"]}>
+        <input className="field text-start" dir="ltr" inputMode="tel" placeholder="01xxxxxxxxx" value={v["phone"] ?? ""} onChange={set("phone")} />
       </FormField>
-      <FormField label={t("المدينة", "City")} error={errors.city}>
-        <input className="field" value={v.city ?? ""} onChange={set("city")} />
+      <FormField label={t("المدينة", "City")} error={errors["city"]}>
+        <input className="field" value={v["city"] ?? ""} onChange={set("city")} />
       </FormField>
       {kind === "wholesale" && (
         <>
-          <FormField label={t("نوع النشاط", "Business type")} error={errors.business_type}>
-            <select className="field" value={v.business_type ?? ""} onChange={set("business_type")}>
+          <FormField label={t("نوع النشاط", "Business type")} error={errors["business_type"]}>
+            <select className="field" value={v["business_type"] ?? ""} onChange={set("business_type")}>
               <option value="">{t("اختار", "Select")}</option>
               <option value="سوبر ماركت">{t("سوبر ماركت", "Supermarket")}</option>
               <option value="محل بقالة">{t("محل بقالة", "Grocery")}</option>
@@ -105,14 +105,14 @@ export function InquiryForm({ kind }: { kind: "wholesale" | "contact" }) {
               <option value="أخرى">{t("أخرى", "Other")}</option>
             </select>
           </FormField>
-          <FormField label={t("الكميات المطلوبة", "Requested quantities")} error={errors.quantities}>
-            <input className="field" placeholder={t("مثال: 10 كراتين", "e.g. 10 cartons")} value={v.quantities ?? ""} onChange={set("quantities")} />
+          <FormField label={t("الكميات المطلوبة", "Requested quantities")} error={errors["quantities"]}>
+            <input className="field" placeholder={t("مثال: 10 كراتين", "e.g. 10 cartons")} value={v["quantities"] ?? ""} onChange={set("quantities")} />
           </FormField>
         </>
       )}
       <div className="sm:col-span-2">
-        <FormField label={kind === "contact" ? t("رسالتك", "Message") : t("تفاصيل إضافية (اختياري)", "Details (optional)")} error={errors.message}>
-          <textarea className="field h-28 py-2" value={v.message ?? ""} onChange={set("message")} />
+        <FormField label={kind === "contact" ? t("رسالتك", "Message") : t("تفاصيل إضافية (اختياري)", "Details (optional)")} error={errors["message"]}>
+          <textarea className="field h-28 py-2" value={v["message"] ?? ""} onChange={set("message")} />
         </FormField>
       </div>
       {state === "error" && (

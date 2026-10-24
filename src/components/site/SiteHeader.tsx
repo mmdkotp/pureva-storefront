@@ -35,7 +35,7 @@ export function SiteHeader() {
             <Link
               key={l.to}
               to={l.to}
-              params={"params" in l ? l.params : undefined}
+              params={("params" in l ? l.params : {}) as never}
               className="text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
               activeOptions={{ exact: true }}
@@ -69,7 +69,7 @@ export function SiteHeader() {
               <Link
                 key={l.to}
                 to={l.to}
-                params={"params" in l ? l.params : undefined}
+                params={("params" in l ? l.params : {}) as never}
                 onClick={() => setOpen(false)}
                 className="py-3 text-sm"
               >

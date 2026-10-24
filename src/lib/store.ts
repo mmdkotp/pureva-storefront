@@ -91,5 +91,5 @@ export const ORDER_ERRORS: Record<string, string> = {
 
 export function orderErrorMessage(message: string | undefined): string {
   const code = Object.keys(ORDER_ERRORS).find((k) => message?.includes(k));
-  return code ? ORDER_ERRORS[code] : "حصلت مشكلة أثناء إرسال الطلب. حاول تاني بعد شوية.";
+  return (code && ORDER_ERRORS[code]) || "حصلت مشكلة أثناء إرسال الطلب. حاول تاني بعد شوية.";
 }
