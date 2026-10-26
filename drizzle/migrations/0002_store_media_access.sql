@@ -1,0 +1,3 @@
+CREATE POLICY store_media_admin ON storage.objects FOR ALL TO authenticated USING(bucket_id='store-media' AND public.has_role(auth.uid(),'admin')) WITH CHECK(bucket_id='store-media' AND public.has_role(auth.uid(),'admin'));
+CREATE OR REPLACE FUNCTION public.valid_coupon_usage() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF TG_OP='UPDATE' AND NEW.used_count<>OLD.used_count AND coalesce(current_setting('app.redeeming_coupon',true),'')<>'true' THEN RAISE EXCEPTION 'COUPON_USAGE_MANAGED'; END IF; RETURN NEW; END $$;
+COMMENT ON COLUMN public.coupons.used_count IS 'Redemption counter managed transactionally by checkout.';

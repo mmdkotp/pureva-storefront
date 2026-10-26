@@ -15,6 +15,13 @@
       "when": 1792935403819,
       "tag": "0001_kleantop_store_management",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792973508622,
+      "tag": "0002_store_media_access",
+      "breakpoints": true
     }
   ]
 }
