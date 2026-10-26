@@ -1,0 +1,1 @@
+export const mediaUrl = (value: string | null | undefined) => value?.startsWith('media:') ? `/api/public/media/${value.slice(6)}` : value || undefined;
