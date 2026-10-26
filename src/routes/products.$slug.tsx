@@ -7,16 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LoadingState, ErrorState, EmptyState } from "@/components/site/States";
 import { isPlaceholder, productImages, productsQuery, settingsQuery, zonesQuery } from "@/lib/store";
-import { formatEGP, whatsappLink } from "@/lib/pricing";
+import { effectivePrice, formatEGP, whatsappLink } from "@/lib/pricing";
 import { useCart, MAX_QTY } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/$slug")({
   head: () => ({
     meta: [
-      { title: "سائل غسيل الأطباق بيوريفا — اطلب أونلاين | PUREVA" },
-      { name: "description", content: "تفاصيل سائل غسيل الأطباق بيوريفا: الأحجام والأسعار بالجنيه المصري وطريقة الاستخدام والشحن." },
-      { property: "og:title", content: "سائل غسيل الأطباق بيوريفا" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { title: "سائل غسيل الأطباق كلين توب — اطلب أونلاين | KLEANTOP" },
+      { name: "description", content: "تفاصيل سائل غسيل الأطباق كلين توب: الأحجام والأسعار بالجنيه المصري وطريقة الاستخدام والشحن." },
+      { property: "og:title", content: "سائل غسيل الأطباق كلين توب" },
       { property: "og:description", content: "الأحجام والأسعار وطريقة الطلب والتوصيل." },
       { property: "og:type", content: "product" },
     ],
@@ -109,14 +110,15 @@ function ProductPage() {
 
         {/* Info */}
         <div>
-          <p className="eyebrow">PUREVA</p>
+          <p className="eyebrow">KLEANTOP</p>
           <h1 className="mt-3 text-3xl font-semibold md:text-4xl">{name}</h1>
           {!isPlaceholder(product.description_ar) && (
-            <p className="mt-4 leading-relaxed text-muted-foreground">{product.description_ar}</p>
+            <p className="mt-4 leading-relaxed text-muted-foreground">{lang === "en" && product.description_en ? product.description_en : product.description_ar}</p>
           )}
 
           <p className="mt-8 text-3xl font-medium">
-            {variant?.price != null ? formatEGP(variant.price, lang) : <span className="text-lg text-muted-foreground">{t("السعر يُعلن قريباً", "Price coming soon")}</span>}
+            {variant?.sale_price != null && <del className="me-3 text-lg text-muted-foreground">{formatEGP(variant.price ?? 0, lang)}</del>}
+            {variant?.price != null ? formatEGP(effectivePrice(variant) ?? 0, lang) : <span className="text-lg text-muted-foreground">{t("السعر يُعلن قريباً", "Price coming soon")}</span>}
           </p>
 
           {product.product_variants.length > 0 && (
@@ -174,7 +176,7 @@ function ProductPage() {
                 <p className="font-medium">{t("الشحن", "Shipping")}</p>
                 <p className="text-muted-foreground">
                   {paidZones.length
-                    ? paidZones.map((z) => `${z.city}: ${formatEGP(z.fee!, lang)}`).join(" · ")
+                    ? paidZones.map((z) => `${z.city}: ${formatEGP(z.fee ?? 0, lang)}`).join(" · ")
                     : t("رسوم الشحن بتتأكد معاك عند تأكيد الطلب.", "Shipping fee confirmed with your order.")}
                   {s?.free_shipping_threshold != null && ` — ${t("شحن مجاني للطلبات من", "Free over")} ${formatEGP(s.free_shipping_threshold, lang)}`}
                 </p>

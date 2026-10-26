@@ -27,7 +27,7 @@ export function SiteHeader() {
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
-        <Link to="/" className="text-lg" aria-label="PUREVA">
+        <Link to="/" className="text-lg" aria-label="KLEANTOP">
           <Logo />
         </Link>
         <nav className="hidden items-center gap-8 text-sm md:flex">

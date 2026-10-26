@@ -66,7 +66,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-primary-foreground/10">
         <div className="container-page py-6 text-xs text-primary-foreground/40">
-          © {new Date().getFullYear()} PUREVA — {t("منتج مصري", "Made in Egypt")}
+          © {new Date().getFullYear()} KLEANTOP — {t("منتج مصري", "Made in Egypt")}
         </div>
       </div>
     </footer>

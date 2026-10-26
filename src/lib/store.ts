@@ -1,12 +1,14 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import productFallback from "@/assets/product-white.jpg";
+import productFallback from "@/assets/product-kleantop.jpg";
 
 export type Variant = {
   id: string;
   product_id: string;
   size_label: string;
   price: number | null;
+  sale_price: number | null;
+  low_stock_threshold: number;
   stock: number;
   active: boolean;
   sort_order: number;
@@ -14,6 +16,11 @@ export type Variant = {
 
 export type Product = {
   id: string;
+  category_id: string | null;
+  featured: boolean;
+  best_selling: boolean;
+  archived: boolean;
+  description_en: string | null;
   slug: string;
   name_ar: string;
   name_en: string | null;
@@ -39,6 +46,7 @@ export const isPlaceholder = (v: string | null | undefined) => !v || v.trim().st
 
 export const settingsQuery = queryOptions({
   queryKey: ["settings"],
+  refetchInterval: 15000,
   queryFn: async () => {
     const { data, error } = await supabase.from("store_settings").select("*").eq("id", 1).single();
     if (error) throw error;
@@ -48,11 +56,13 @@ export const settingsQuery = queryOptions({
 
 export const productsQuery = queryOptions({
   queryKey: ["products"],
+  refetchInterval: 15000,
   queryFn: async () => {
     const { data, error } = await supabase
       .from("products")
       .select("*, product_variants(*)")
       .eq("active", true)
+      .eq("archived", false)
       .order("sort_order");
     if (error) throw error;
     return (data as unknown as Product[]).map((p) => ({
@@ -78,6 +88,8 @@ export const zonesQuery = queryOptions({
 });
 
 export const ORDER_ERRORS: Record<string, string> = {
+  INVALID_COUPON: "الكوبون غير صالح أو انتهت صلاحيته أو عدد استخداماته.",
+  COUPON_NOT_ELIGIBLE: "السلة لا تستوفي شروط الكوبون.",
   COD_DISABLED: "الدفع عند الاستلام غير متاح حالياً. تواصل معنا على واتساب لإتمام طلبك.",
   INVALID_NAME: "من فضلك اكتب اسمك بشكل صحيح.",
   INVALID_PHONE: "رقم الموبايل لازم يكون مصري ويبدأ بـ 010 أو 011 أو 012 أو 015.",

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
+import { effectivePrice } from "@/lib/pricing";
 import { PRODUCT_FALLBACK_IMAGE } from "@/lib/store";
 
 export type CartDetailLine = {
@@ -25,7 +26,7 @@ export function useCartDetails() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_variants")
-        .select("id, size_label, price, stock, active, products(name_ar, name_en, slug, images, active)")
+        .select("id, size_label, price, sale_price, stock, active, products(name_ar, name_en, slug, images, active, archived)")
         .in("id", ids);
       if (error) throw error;
       return data;
@@ -34,13 +35,13 @@ export function useCartDetails() {
 
   const lines: CartDetailLine[] = cart.lines.flatMap((l) => {
     const v = query.data?.find((d) => d.id === l.variantId);
-    if (!v || !v.active || !v.products || !v.products.active) return [];
+    if (!v || !v.active || !v.products || !v.products.active || v.products.archived) return [];
     return [
       {
         variantId: l.variantId,
         quantity: l.quantity,
         sizeLabel: v.size_label,
-        price: v.price,
+        price: effectivePrice(v),
         stock: v.stock,
         productName: v.products.name_ar,
         productNameEn: v.products.name_en,

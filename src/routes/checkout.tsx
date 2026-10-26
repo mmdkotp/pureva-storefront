@@ -15,9 +15,11 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "إتمام الطلب | PUREVA بيوريفا" },
-      { name: "description", content: "أكمل بيانات التوصيل لطلب بيوريفا والدفع عند الاستلام." },
-      { property: "og:title", content: "إتمام الطلب — بيوريفا" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "إتمام الطلب | KLEANTOP كلين توب" },
+      { name: "description", content: "أكمل بيانات التوصيل لطلب كلين توب والدفع عند الاستلام." },
+      { property: "og:title", content: "إتمام الطلب — كلين توب" },
       { property: "og:description", content: "أكمل بيانات التوصيل." },
       { name: "robots", content: "noindex" },
     ],

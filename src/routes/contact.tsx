@@ -8,9 +8,11 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "تواصل معنا — بيوريفا PUREVA" },
-      { name: "description", content: "تواصل مع فريق بيوريفا لأي استفسار عن المنتج أو الطلبات." },
-      { property: "og:title", content: "تواصل مع بيوريفا" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "تواصل معنا — كلين توب KLEANTOP" },
+      { name: "description", content: "تواصل مع فريق كلين توب لأي استفسار عن المنتج أو الطلبات." },
+      { property: "og:title", content: "تواصل مع كلين توب" },
       { property: "og:description", content: "ابعتلنا رسالتك وهنرد عليك." },
     ],
   }),

@@ -13,10 +13,12 @@ export const Route = createFileRoute("/order-confirmed")({
   }),
   head: () => ({
     meta: [
-      { title: "تم استلام طلبك | PUREVA بيوريفا" },
-      { name: "description", content: "تم تسجيل طلبك من بيوريفا وسيتم التواصل معك لتأكيده." },
-      { property: "og:title", content: "تم استلام طلبك — بيوريفا" },
-      { property: "og:description", content: "شكراً لطلبك من بيوريفا." },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "تم استلام طلبك | KLEANTOP كلين توب" },
+      { name: "description", content: "تم تسجيل طلبك من كلين توب وسيتم التواصل معك لتأكيده." },
+      { property: "og:title", content: "تم استلام طلبك — كلين توب" },
+      { property: "og:description", content: "شكراً لطلبك من كلين توب." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -40,7 +42,7 @@ function Confirmed() {
       <CheckCircle2 className="mx-auto size-14 text-success" strokeWidth={1.2} />
       <h1 className="mt-6 text-3xl font-semibold">{t("تم استلام طلبك", "Order received")}</h1>
       <p className="mt-4 text-muted-foreground">
-        {t("شكراً لاختيارك بيوريفا. هنتواصل معاك على رقم الموبايل لتأكيد الطلب وموعد التوصيل.", "Thank you! We'll call you to confirm your order and delivery time.")}
+        {t("شكراً لاختيارك كلين توب. هنتواصل معاك على رقم الموبايل لتأكيد الطلب وموعد التوصيل.", "Thank you! We'll call you to confirm your order and delivery time.")}
       </p>
       <div className="mt-10 border p-6 text-sm">
         <p className="eyebrow">{t("رقم الطلب", "Order number")}</p>
