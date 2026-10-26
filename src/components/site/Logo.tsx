@@ -1,19 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
+import { settingsQuery } from "@/lib/store";
+import { mediaUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 
-/** KLEANTOP wordmark: wide-set custom lettering with a silver "V" and the Arabic name beneath. */
+/** The store's editable bilingual wordmark. */
 export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
+  const { data: s } = useQuery(settingsQuery);
   return (
-    <span className={cn("inline-flex flex-col items-center leading-none", className)} dir="ltr">
-      <span className="font-wordmark font-bold tracking-[0.32em] ps-[0.32em]">
-        PURE<span className="silver-text">V</span>A
-      </span>
-      {!compact && (
-        <span className="mt-1.5 flex items-center gap-2 text-[0.55em] font-medium tracking-normal opacity-70">
-          <span className="h-px w-4 bg-current opacity-50" />
-          كلين توب
-          <span className="h-px w-4 bg-current opacity-50" />
-        </span>
-      )}
+    <span className={cn("inline-flex max-w-full flex-col items-center leading-none", className)} dir="ltr">
+      {s?.logo_url ? <img src={mediaUrl(s.logo_url)} alt={s.brand_name} className="h-12 max-w-48 object-contain" /> : <span className="font-wordmark break-all font-bold">{s?.brand_name || "KLEANTOP"}</span>}
+      {!compact && <span className="mt-1.5 flex items-center gap-2 text-[0.55em] font-medium opacity-70"><span className="h-px w-4 bg-current opacity-50" />{s?.brand_name_ar || "كلين توب"}<span className="h-px w-4 bg-current opacity-50" /></span>}
     </span>
   );
 }
