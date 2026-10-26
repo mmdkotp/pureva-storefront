@@ -6,9 +6,11 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/policies")({
   head: () => ({
     meta: [
-      { title: "سياسات الشحن والاسترجاع والخصوصية — بيوريفا" },
-      { name: "description", content: "سياسة الشحن والاسترجاع والخصوصية لمتجر بيوريفا." },
-      { property: "og:title", content: "سياسات متجر بيوريفا" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "سياسات الشحن والاسترجاع والخصوصية — كلين توب" },
+      { name: "description", content: "سياسة الشحن والاسترجاع والخصوصية لمتجر كلين توب." },
+      { property: "og:title", content: "سياسات متجر كلين توب" },
       { property: "og:description", content: "الشحن والاسترجاع والخصوصية." },
     ],
   }),

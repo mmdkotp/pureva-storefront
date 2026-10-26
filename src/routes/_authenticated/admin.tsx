@@ -15,9 +15,11 @@ import { InquiriesPanel } from "@/components/admin/InquiriesPanel";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "لوحة التحكم — بيوريفا" },
-      { name: "description", content: "إدارة متجر بيوريفا." },
-      { property: "og:title", content: "لوحة التحكم — بيوريفا" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "لوحة التحكم — كلين توب" },
+      { name: "description", content: "إدارة متجر كلين توب." },
+      { property: "og:title", content: "لوحة التحكم — كلين توب" },
       { property: "og:description", content: "إدارة المتجر." },
       { name: "robots", content: "noindex" },
     ],

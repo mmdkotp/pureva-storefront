@@ -85,8 +85,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PUREVA بيوريفا — سائل غسيل أطباق" },
-      { name: "description", content: "بيوريفا — سائل غسيل أطباق من علامة مصرية. نضافة تفرق، ولمعة تدوم." },
+      { title: "KLEANTOP كلين توب — سائل غسيل أطباق" },
+      { name: "description", content: "كلين توب — سائل غسيل أطباق من علامة مصرية. نضافة تفرق، ولمعة تدوم." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

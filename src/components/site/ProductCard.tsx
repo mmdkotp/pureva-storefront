@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { formatEGP } from "@/lib/pricing";
+import { effectivePrice, formatEGP } from "@/lib/pricing";
 import { productImages, type Product } from "@/lib/store";
 import { useI18n } from "@/lib/i18n";
 
@@ -31,7 +31,8 @@ export function ProductCard({ product }: { product: Product }) {
             <li key={v.id} className="flex items-center justify-between py-2">
               <span className="text-muted-foreground">{v.size_label}</span>
               <span className="font-medium">
-                {v.price != null ? formatEGP(v.price, lang) : t("السعر يُعلن قريباً", "Price soon")}
+                {v.sale_price != null && <del className="me-2 text-xs text-muted-foreground">{formatEGP(v.price ?? 0, lang)}</del>}
+                {v.price != null ? formatEGP(effectivePrice(v) ?? 0, lang) : t("السعر يُعلن قريباً", "Price soon")}
               </span>
             </li>
           ))}

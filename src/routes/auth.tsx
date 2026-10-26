@@ -9,9 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "دخول الإدارة — بيوريفا" },
-      { name: "description", content: "تسجيل دخول لوحة تحكم متجر بيوريفا." },
-      { property: "og:title", content: "دخول الإدارة — بيوريفا" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "دخول الإدارة — كلين توب" },
+      { name: "description", content: "تسجيل دخول لوحة تحكم متجر كلين توب." },
+      { property: "og:title", content: "دخول الإدارة — كلين توب" },
       { property: "og:description", content: "لوحة تحكم المتجر." },
       { name: "robots", content: "noindex" },
     ],

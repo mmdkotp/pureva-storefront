@@ -54,3 +54,7 @@ export function whatsappLink(number: string | null | undefined, text?: string): 
   if (digits.length < 11) return null;
   return `https://wa.me/${digits}${text ? `?text=${encodeURIComponent(text)}` : ""}`;
 }
+
+export function effectivePrice(v: { price: number | null; sale_price?: number | null }): number | null {
+  return v.sale_price != null && v.price != null && v.sale_price >= 0 && v.sale_price <= v.price ? v.sale_price : v.price;
+}

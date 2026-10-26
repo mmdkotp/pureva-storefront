@@ -11,10 +11,12 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/wholesale")({
   head: () => ({
     meta: [
-      { title: "الجملة والتجار — بيوريفا | PUREVA Wholesale" },
-      { name: "description", content: "للمحلات والموزعين: قدّم طلب شراء بيوريفا بالجملة وتواصل معنا على واتساب." },
-      { property: "og:title", content: "بيوريفا للجملة والتجار" },
-      { property: "og:description", content: "قدّم طلب جملة لسائل غسيل الأطباق بيوريفا." },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "الجملة والتجار — كلين توب | KLEANTOP Wholesale" },
+      { name: "description", content: "للمحلات والموزعين: قدّم طلب شراء كلين توب بالجملة وتواصل معنا على واتساب." },
+      { property: "og:title", content: "كلين توب للجملة والتجار" },
+      { property: "og:description", content: "قدّم طلب جملة لسائل غسيل الأطباق كلين توب." },
     ],
   }),
   component: Wholesale,
@@ -32,7 +34,7 @@ function Wholesale() {
       return data;
     },
   });
-  const wa = whatsappLink(s?.whatsapp, "مرحباً، عندي استفسار عن أسعار الجملة لبيوريفا");
+  const wa = whatsappLink(s?.whatsapp, "مرحباً، عندي استفسار عن أسعار الجملة لكلين توب");
   const variants = (products ?? []).flatMap((p) => p.product_variants.map((v) => ({ ...v, productName: p.name_ar })));
   const rows = (prices ?? []).flatMap((pr) => {
     const v = variants.find((x) => x.id === pr.variant_id);
@@ -44,7 +46,7 @@ function Wholesale() {
       <section className="bg-night py-20 text-primary-foreground">
         <div className="container-page">
           <p className="eyebrow text-silver">{t("للمحلات والموزعين", "Shops & distributors")}</p>
-          <h1 className="mt-3 max-w-2xl text-4xl font-semibold md:text-5xl">{t("بيوريفا للجملة والتجار", "PUREVA Wholesale")}</h1>
+          <h1 className="mt-3 max-w-2xl text-4xl font-semibold md:text-5xl">{t("كلين توب للجملة والتجار", "KLEANTOP Wholesale")}</h1>
           <p className="mt-5 max-w-xl text-primary-foreground/60">
             {t("ابعتلنا بيانات نشاطك والكميات اللي محتاجها، وفريق المبيعات هيتواصل معاك بالأسعار والشروط.", "Share your business details and quantities; our sales team will reply with pricing and terms.")}
           </p>

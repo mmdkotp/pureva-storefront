@@ -8,15 +8,17 @@ import { Logo } from "@/components/site/Logo";
 import { productsQuery, settingsQuery } from "@/lib/store";
 import { whatsappLink } from "@/lib/pricing";
 import { useI18n } from "@/lib/i18n";
-import heroImage from "@/assets/hero-bottle.jpg";
+import heroImage from "@/assets/hero-kleantop.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "PUREVA بيوريفا — سائل غسيل أطباق | نضافة تفرق، ولمعة تدوم" },
-      { name: "description", content: "اطلب سائل غسيل الأطباق بيوريفا أونلاين مع توصيل داخل مصر والدفع عند الاستلام." },
-      { property: "og:title", content: "PUREVA بيوريفا — سائل غسيل أطباق" },
-      { property: "og:description", content: "نضافة تفرق، ولمعة تدوم. اطلب بيوريفا أونلاين." },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
+      { title: "KLEANTOP كلين توب — سائل غسيل أطباق | نضافة تفرق، ولمعة تدوم" },
+      { name: "description", content: "اطلب سائل غسيل الأطباق كلين توب أونلاين مع توصيل داخل مصر والدفع عند الاستلام." },
+      { property: "og:title", content: "KLEANTOP كلين توب — سائل غسيل أطباق" },
+      { property: "og:description", content: "نضافة تفرق، ولمعة تدوم. اطلب كلين توب أونلاين." },
     ],
   }),
   component: Index,
@@ -46,7 +48,7 @@ function Index() {
       <section className="relative overflow-hidden bg-primary text-primary-foreground">
         <img
           src={s?.hero_image_url || heroImage}
-          alt={t("عبوة بيوريفا لغسيل الأطباق", "PUREVA dishwashing liquid bottle")}
+          alt={t("عبوة كلين توب لغسيل الأطباق", "KLEANTOP dishwashing liquid bottle")}
           width={1600}
           height={1008}
           className="absolute inset-0 size-full object-cover object-[75%_center] opacity-90"
@@ -56,7 +58,7 @@ function Index() {
           <div className="max-w-xl rtl:ms-auto">
             <Logo className="text-3xl md:text-4xl" />
             <h1 className="mt-10 text-4xl font-semibold leading-tight md:text-6xl">
-              {s?.hero_title || t("سائل غسيل أطباق بيوريفا", "PUREVA Dishwashing Liquid")}
+              {s?.hero_title || t("سائل غسيل أطباق كلين توب", "KLEANTOP Dishwashing Liquid")}
             </h1>
             <p className="mt-5 text-lg text-primary-foreground/70 md:text-xl">
               {s?.hero_subtitle || "نضافة تفرق، ولمعة تدوم"}
@@ -118,11 +120,11 @@ function Index() {
         </section>
       )}
 
-      {/* Why PUREVA */}
+      {/* Why KLEANTOP */}
       <section className="bg-night py-24 text-primary-foreground">
         <div className="container-page">
-          <p className="eyebrow text-silver">PUREVA</p>
-          <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{t("ليه تختار بيوريفا؟", "Why PUREVA?")}</h2>
+          <p className="eyebrow text-silver">KLEANTOP</p>
+          <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{t("ليه تختار كلين توب؟", "Why KLEANTOP?")}</h2>
           <div className="mt-14 grid gap-px bg-primary-foreground/10 sm:grid-cols-2 lg:grid-cols-4">
             {why.map((w) => (
               <div key={w.title} className="bg-primary p-8">
@@ -140,7 +142,7 @@ function Index() {
         <div className="grid items-center gap-10 border p-10 md:grid-cols-[1.4fr_1fr] md:p-16">
           <div>
             <p className="eyebrow">{t("للمحلات والموزعين", "For shops & distributors")}</p>
-            <h2 className="mt-3 text-3xl font-semibold">{t("عايز تبيع بيوريفا في محلك؟", "Want to stock PUREVA?")}</h2>
+            <h2 className="mt-3 text-3xl font-semibold">{t("عايز تبيع كلين توب في محلك؟", "Want to stock KLEANTOP?")}</h2>
             <p className="mt-4 text-muted-foreground">
               {t("ابعتلنا بيانات نشاطك والكميات المطلوبة وفريقنا هيتواصل معاك بعروض الجملة.", "Send us your business details and quantities and our team will reach out.")}
             </p>
