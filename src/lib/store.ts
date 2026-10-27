@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { mediaUrl } from "@/lib/media";
 import productFallback from "@/assets/product-kleantop.jpg";
 
 export type Variant = {
@@ -39,7 +40,7 @@ export type Product = {
 export const PRODUCT_FALLBACK_IMAGE = productFallback;
 
 export const productImages = (p: Pick<Product, "images">) =>
-  p.images.length ? p.images : [PRODUCT_FALLBACK_IMAGE];
+  p.images.length ? p.images.map(v => mediaUrl(v) ?? PRODUCT_FALLBACK_IMAGE) : [PRODUCT_FALLBACK_IMAGE];
 
 /** Placeholder text seeded in the DB starts with [مؤقت]; hide it from shoppers. */
 export const isPlaceholder = (v: string | null | undefined) => !v || v.trim().startsWith("[مؤقت]");

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,10 @@ function CheckoutPage() {
   const [form, setForm] = useState<Form>({ name: "", phone: "", city: "", address: "", notes: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [coupon, setCoupon] = useState("");
+  const [quote, setQuote] = useState<{subtotal:number; discount:number;shipping_fee:number|null;total:number} | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  useEffect(()=>{setQuote(null);setQuoteError(null);if(!form.city || !lines.length)return;let active=true;const timer=setTimeout(async()=>{const {data,error}=await supabase.rpc("quote_order",{_items:lines.map(l=>({variant_id:l.variantId,quantity:l.quantity})),_city:form.city,_coupon:coupon});if(!active)return;if(error)setQuoteError(orderErrorMessage(error.message));else setQuote(data as {subtotal:number;discount:number;shipping_fee:number|null;total:number});},300);return()=>{active=false;clearTimeout(timer);};},[form.city,coupon,JSON.stringify(lines.map(l=>[l.variantId,l.quantity,l.price]))]);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (isLoading || settings.isLoading || zones.isLoading) return <LoadingState />;
@@ -60,8 +64,8 @@ function CheckoutPage() {
   const s = settings.data;
   const zone = zones.data?.find((z) => z.city === form.city);
   const subtotal = computeSubtotal(lines);
-  const shipping = zone ? computeShipping(subtotal, zone.fee, s?.free_shipping_threshold ?? null) : null;
-  const total = subtotal + (shipping ?? 0);
+  const shipping = quote ? quote.shipping_fee : zone ? computeShipping(subtotal, zone.fee, s?.free_shipping_threshold ?? null) : null;
+  const total = quote?.total ?? subtotal + (shipping ?? 0);
 
   const set = (k: keyof Form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -79,6 +83,7 @@ function CheckoutPage() {
     setErrors({});
     setSubmitting(true);
     const { data, error } = await supabase.rpc("place_order", {
+      _coupon: coupon,
       _name: parsed.data.name,
       _phone: normalizeEgyptPhone(parsed.data.phone),
       _city: parsed.data.city,
@@ -142,6 +147,10 @@ function CheckoutPage() {
               <span>{formatEGP((l.price ?? 0) * l.quantity, lang)}</span>
             </div>
           ))}
+          <FormField label={t("كود الخصم","Coupon code")}><input className="field" dir="ltr" value={coupon} onChange={e=>setCoupon(e.target.value.toUpperCase())} /></FormField>
+          {quoteError && <p className="text-destructive" role="alert">{quoteError}</p>}
+          {!!quote?.discount && <div className="flex justify-between"><span>{t("الخصم","Discount")}</span><span>− {formatEGP(quote.discount,lang)}</span></div>}
+          {zone?.delivery_info && <p className="text-muted-foreground">{zone.delivery_info}</p>}
           <div className="border-t pt-3" />
           <div className="flex justify-between"><span>{t("الإجمالي الفرعي", "Subtotal")}</span><span>{formatEGP(subtotal, lang)}</span></div>
           <div className="flex justify-between">
@@ -155,7 +164,7 @@ function CheckoutPage() {
           </div>
           <p className="text-xs text-muted-foreground">{t("طريقة الدفع: الدفع عند الاستلام", "Payment: cash on delivery")}</p>
           {submitError && <p role="alert" className="border border-destructive/40 bg-background p-3 text-destructive">{submitError}</p>}
-          <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+          <Button type="submit" size="lg" className="w-full" disabled={submitting || !!quoteError || (Boolean(form.city) && !quote)}>
             {submitting && <Loader2 className="animate-spin" />}
             {submitting ? t("جاري إرسال الطلب...", "Placing order...") : t("تأكيد الطلب", "Place order")}
           </Button>

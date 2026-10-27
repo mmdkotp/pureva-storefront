@@ -1,3 +1,4 @@
+import { mediaUrl } from "@/lib/media";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
@@ -46,7 +47,7 @@ export function useCartDetails() {
         productName: v.products.name_ar,
         productNameEn: v.products.name_en,
         slug: v.products.slug,
-        image: v.products.images?.[0] ?? PRODUCT_FALLBACK_IMAGE,
+        image: mediaUrl(v.products.images?.[0]) ?? PRODUCT_FALLBACK_IMAGE,
       },
     ];
   });

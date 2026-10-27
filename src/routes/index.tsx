@@ -1,4 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { mediaUrl } from "@/lib/media";
+import { categoriesQuery, homeSections, savedFaqs } from "@/lib/catalog";
 import { useQuery } from "@tanstack/react-query";
 import { Truck, Banknote, MessageCircle, Flag, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +14,7 @@ import { useI18n } from "@/lib/i18n";
 import heroImage from "@/assets/hero-kleantop.jpg";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (search: Record<string, unknown>) => ({ category: typeof search["category"] === "string" ? search["category"] : undefined }),
   head: () => ({
     meta: [
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,10 +29,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const categories = useQuery(categoriesQuery);
+  const { category: categoryParam } = Route.useSearch();
+  const [category, setCategory] = useState(categoryParam ?? "");
+  useEffect(()=>setCategory(categoryParam ?? ""),[categoryParam]);
+  const [search, setSearch] = useState("");
   const settings = useQuery(settingsQuery);
   const products = useQuery(productsQuery);
   const s = settings.data;
+  const sections = homeSections(s?.home_sections);
+  const list = (products.data ?? []).filter(p => (!category || p.category_id===category) && `${p.name_ar} ${p.name_en ?? ""}`.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>Number(b.featured)-Number(a.featured));
+  const layout = (key: string) => { const i = sections.findIndex(x=>x.key===key); return {order: i < 0 ? 99 : i, display: i >= 0 && !sections[i]?.enabled ? "none" : undefined}; };
   const first = products.data?.[0];
   const benefits = (products.data ?? []).flatMap((p) => p.benefits).filter(Boolean);
   const wa = whatsappLink(s?.whatsapp);
@@ -43,11 +55,11 @@ function Index() {
   ];
 
   return (
-    <>
+    <div className="flex flex-col">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-primary text-primary-foreground">
+      <section style={layout("hero")} className="relative overflow-hidden bg-primary text-primary-foreground">
         <img
-          src={s?.hero_image_url || heroImage}
+          src={mediaUrl(s?.hero_image_url) || heroImage}
           alt={t("عبوة كلين توب لغسيل الأطباق", "KLEANTOP dishwashing liquid bottle")}
           width={1600}
           height={1008}
@@ -58,10 +70,10 @@ function Index() {
           <div className="max-w-xl rtl:ms-auto">
             <Logo className="text-3xl md:text-4xl" />
             <h1 className="mt-10 text-4xl font-semibold leading-tight md:text-6xl">
-              {s?.hero_title || t("سائل غسيل أطباق كلين توب", "KLEANTOP Dishwashing Liquid")}
+              {(lang === "en" ? s?.hero_title_en : s?.hero_title) || t("سائل غسيل أطباق كلين توب", "KLEANTOP Dishwashing Liquid")}
             </h1>
             <p className="mt-5 text-lg text-primary-foreground/70 md:text-xl">
-              {s?.hero_subtitle || "نضافة تفرق، ولمعة تدوم"}
+              {(lang === "en" ? s?.hero_subtitle_en : s?.hero_subtitle) || "نضافة تفرق، ولمعة تدوم"}
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Button variant="hero" size="lg" asChild>
@@ -81,22 +93,23 @@ function Index() {
       </section>
 
       {/* Products */}
-      <section id="products" className="container-page py-24">
+      <section style={layout("products")} id="products" className="container-page py-24">
         <div className="mb-12 flex items-end justify-between gap-4">
           <div>
             <p className="eyebrow">{t("منتجاتنا", "Our products")}</p>
             <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{t("اختار الحجم المناسب", "Choose your size")}</h2>
           </div>
         </div>
+        <div className="mb-8 flex flex-wrap gap-3"><input className="field max-w-xs" aria-label={t("بحث المنتجات","Search products")} placeholder={t("بحث المنتجات","Search products")} value={search} onChange={e=>setSearch(e.target.value)} /><select className="field w-48" aria-label={t("القسم","Category")} value={category} onChange={e=>setCategory(e.target.value)}><option value="">{t("كل الأقسام","All categories")}</option>{categories.data?.map(c=><option key={c.id} value={c.id}>{lang==="en" && c.name_en ? c.name_en : c.name_ar}</option>)}</select></div>
         {products.isLoading ? (
           <LoadingState />
         ) : products.isError ? (
           <ErrorState />
-        ) : !products.data?.length ? (
+        ) : !list.length ? (
           <EmptyState title={t("المنتجات هتتضاف قريباً", "Products coming soon")} />
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {products.data.map((p) => (
+            {list.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>
@@ -105,7 +118,7 @@ function Index() {
 
       {/* Verified benefits only (entered by admin) */}
       {benefits.length > 0 && (
-        <section className="border-y bg-secondary py-20">
+        <section style={layout("benefits")} className="border-y bg-secondary py-20">
           <div className="container-page">
             <p className="eyebrow">{t("مميزات المنتج", "Product benefits")}</p>
             <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -121,7 +134,7 @@ function Index() {
       )}
 
       {/* Why KLEANTOP */}
-      <section className="bg-night py-24 text-primary-foreground">
+      <section style={layout("why")} className="bg-night py-24 text-primary-foreground">
         <div className="container-page">
           <p className="eyebrow text-silver">KLEANTOP</p>
           <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{t("ليه تختار كلين توب؟", "Why KLEANTOP?")}</h2>
@@ -138,7 +151,7 @@ function Index() {
       </section>
 
       {/* Wholesale */}
-      <section className="container-page py-24">
+      <section style={layout("wholesale")} className="container-page py-24">
         <div className="grid items-center gap-10 border p-10 md:grid-cols-[1.4fr_1fr] md:p-16">
           <div>
             <p className="eyebrow">{t("للمحلات والموزعين", "For shops & distributors")}</p>
@@ -159,6 +172,8 @@ function Index() {
           </div>
         </div>
       </section>
-    </>
+      {(lang === "en" ? s?.about_en : s?.about_ar) && <section style={layout("about")} className="container-page py-20"><h2 className="text-3xl font-semibold">{t("عن العلامة","About")}</h2><p className="mt-6 max-w-3xl whitespace-pre-line leading-relaxed">{lang === "en" ? s?.about_en : s?.about_ar}</p></section>}
+      {savedFaqs(s?.faqs,lang).length>0 && <section style={layout("faq")} className="container-page py-20"><h2 className="text-3xl font-semibold">{t("أسئلة شائعة","FAQ")}</h2><div className="mt-8 divide-y">{savedFaqs(s?.faqs,lang).map((f,i)=><details key={i} className="py-4"><summary className="cursor-pointer font-medium">{f.q}</summary><p className="mt-3 whitespace-pre-line">{f.a}</p></details>)}</div></section>}
+    </div>
   );
 }

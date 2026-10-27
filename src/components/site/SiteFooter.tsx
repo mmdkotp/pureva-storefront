@@ -17,7 +17,7 @@ export function SiteFooter() {
       <div className="container-page grid gap-12 py-16 md:grid-cols-4">
         <div className="md:col-span-2">
           <Logo className="text-2xl" />
-          <p className="mt-6 max-w-sm text-sm text-primary-foreground/60">“نضافة تفرق، ولمعة تدوم”</p>
+          <p className="mt-6 max-w-sm text-sm text-primary-foreground/60">{s?.tagline || s?.hero_subtitle}</p>
           <div className="mt-6 flex gap-4 text-primary-foreground/70">
             {s?.facebook_url && (
               <a href={s.facebook_url} target="_blank" rel="noreferrer" aria-label="Facebook">
@@ -66,7 +66,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-primary-foreground/10">
         <div className="container-page py-6 text-xs text-primary-foreground/40">
-          © {new Date().getFullYear()} KLEANTOP — {t("منتج مصري", "Made in Egypt")}
+          © {new Date().getFullYear()} {s?.brand_name || "KLEANTOP"} — {t("منتج مصري", "Made in Egypt")}
         </div>
       </div>
     </footer>
