@@ -19,6 +19,7 @@ import { CartProvider } from "@/lib/cart";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Toaster } from "@/components/ui/sonner";
+import { StoreHead } from "@/components/site/StoreHead";
 
 function NotFoundComponent() {
   return (
@@ -140,6 +141,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <CartProvider>
+          <StoreHead />
           {!isAdmin && <SiteHeader />}
           <main className="min-h-[60vh]">
             <Outlet />

@@ -14,7 +14,7 @@ import { useI18n } from "@/lib/i18n";
 import heroImage from "@/assets/hero-kleantop.jpg";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: Record<string, unknown>) => ({ category: typeof search["category"] === "string" ? search["category"] : undefined }),
+  validateSearch: (search: Record<string, unknown>): { category?: string } => typeof search["category"] === "string" ? { category: search["category"] } : {},
   head: () => ({
     meta: [
       { name: "twitter:card", content: "summary_large_image" },
