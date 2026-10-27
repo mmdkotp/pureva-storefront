@@ -11,9 +11,20 @@ import { settingsQuery } from "@/lib/store";
 import { isValidEgyptPhone } from "@/lib/pricing";
 import type { Tables } from "@/integrations/supabase/types";
 
+import { ImageManager } from "./ImageManager";
+
 type S = Tables<"store_settings">;
 
 const textFields: { k: keyof S; label: string; ltr?: boolean; area?: boolean }[] = [
+  { k: "brand_name", label: "اسم العلامة بالإنجليزي" },
+  { k: "brand_name_ar", label: "اسم العلامة بالعربي" },
+  { k: "tagline", label: "الشعار النصي" },
+  { k: "seo_title", label: "عنوان الموقع لمحركات البحث" },
+  { k: "seo_description", label: "وصف الموقع لمحركات البحث", area: true },
+  { k: "hero_title_en", label: "عنوان البانر بالإنجليزي" },
+  { k: "hero_subtitle_en", label: "نص البانر بالإنجليزي" },
+  { k: "about_ar", label: "عن العلامة بالعربي", area: true },
+  { k: "about_en", label: "عن العلامة بالإنجليزي", area: true },
   { k: "hero_title", label: "عنوان الصفحة الرئيسية" },
   { k: "hero_subtitle", label: "النص تحت العنوان" },
   { k: "hero_image_url", label: "رابط صورة البانر (https، اختياري)", ltr: true },
@@ -50,8 +61,9 @@ export function SettingsPanel() {
     if (th != null && (isNaN(th) || th < 0)) return void toast.error("حد الشحن المجاني غير صحيح");
     if (s.whatsapp && !isValidEgyptPhone(s.whatsapp)) return void toast.error("رقم واتساب غير صحيح");
     for (const k of ["hero_image_url", "facebook_url", "instagram_url", "tiktok_url"] as const) {
-      if (s[k] && !/^https:\/\//.test(s[k]!)) return void toast.error("الروابط لازم تبدأ بـ https://");
+      if (s[k] && !/^https:\/\//.test(s[k] ?? "") && !s[k]?.startsWith("media:")) return void toast.error("الروابط لازم تبدأ بـ https://");
     }
+    if (!s.brand_name.trim() || !s.brand_name_ar.trim()) return void toast.error("اكتب اسم العلامة");
     setSaving(true);
     const { id: _id, updated_at: _u, ...rest } = s;
     const clean = Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, typeof v === "string" && v.trim() === "" ? null : v]));
@@ -63,11 +75,14 @@ export function SettingsPanel() {
   };
 
   return (
-    <div className="space-y-6 border bg-card p-6">
+    <div className="space-y-6 p-1">
       <div className="flex flex-wrap gap-8">
         <label className="flex items-center gap-3 text-sm">الدفع عند الاستلام <Switch checked={s.cod_enabled} onCheckedChange={(v) => setS({ ...s, cod_enabled: v })} /></label>
         <label className="flex items-center gap-3 text-sm">إظهار أسعار الجملة للزوار <Switch checked={s.show_wholesale_prices} onCheckedChange={(v) => setS({ ...s, show_wholesale_prices: v })} /></label>
       </div>
+      <label className="flex items-center gap-3 text-sm">إعادة المخزون عند إلغاء الطلب<Switch checked={s.restore_stock_on_cancel} onCheckedChange={v=>setS({...s,restore_stock_on_cancel:v})} /></label>
+      <p className="text-sm text-muted-foreground">العملة: EGP · الدفع المتاح: عند الاستلام</p>
+      <div className="grid gap-5 md:grid-cols-3">{(["logo_url","favicon_url","hero_image_url"] as const).map((k,i)=><FormField key={k} label={["الشعار","أيقونة الموقع","صورة البانر"][i] ?? ""}><ImageManager single value={s[k] ? [s[k]] : []} onChange={imgs=>setS({...s,[k]:imgs[0] ?? null})} /></FormField>)}</div>
       <div className="grid gap-4 md:grid-cols-2">
         <FormField label="حد الشحن المجاني (ج.م، اتركه فارغاً لإلغائه)">
           <input className="field" inputMode="decimal" value={threshold} onChange={(e) => setThreshold(e.target.value)} />

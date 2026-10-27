@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { LoadingState, ErrorState } from "@/components/site/States";
 
-type Zone = { id: string; city: string; fee: number | null; active: boolean; sort_order: number };
+type Zone = { id: string; city: string; fee: number | null; active: boolean; sort_order: number; delivery_info: string | null };
 
 export function ShippingPanel() {
   const qc = useQueryClient();
@@ -53,11 +53,12 @@ export function ShippingPanel() {
 function ZoneRow({ zone, onSaved }: { zone: Zone; onSaved: () => void }) {
   const [city, setCity] = useState(zone.city);
   const [fee, setFee] = useState(zone.fee?.toString() ?? "");
+  const [delivery, setDelivery] = useState(zone.delivery_info ?? "");
   const [active, setActive] = useState(zone.active);
   const save = async () => {
     const f = fee.trim() === "" ? null : Number(fee);
     if (f != null && (isNaN(f) || f < 0)) return void toast.error("رسوم غير صحيحة");
-    const { error } = await supabase.from("shipping_zones").update({ city: city.trim(), fee: f, active }).eq("id", zone.id);
+    const { error } = await supabase.from("shipping_zones").update({ city: city.trim(), fee: f, active, delivery_info: delivery }).eq("id", zone.id);
     if (error) return void toast.error("تعذر الحفظ");
     toast.success("تم الحفظ");
     onSaved();
@@ -72,6 +73,7 @@ function ZoneRow({ zone, onSaved }: { zone: Zone; onSaved: () => void }) {
     <div className="flex flex-wrap items-center gap-3 p-3">
       <input className="field h-9 w-48" value={city} onChange={(e) => setCity(e.target.value)} />
       <input className="field h-9 w-32" inputMode="decimal" placeholder="الرسوم (ج.م)" value={fee} onChange={(e) => setFee(e.target.value)} />
+      <input className="field h-9 w-48" placeholder="مدة التوصيل المتوقعة" value={delivery} onChange={e=>setDelivery(e.target.value)} />
       <label className="flex items-center gap-2 text-sm">متاح <Switch checked={active} onCheckedChange={setActive} /></label>
       <Button size="sm" onClick={save}><Save /> حفظ</Button>
       <Button size="sm" variant="ghost" onClick={remove} aria-label="حذف"><Trash2 /></Button>
