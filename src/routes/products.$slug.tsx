@@ -9,6 +9,7 @@ import { LoadingState, ErrorState, EmptyState } from "@/components/site/States";
 import { isPlaceholder, productImages, productsQuery, settingsQuery, zonesQuery } from "@/lib/store";
 import { effectivePrice, formatEGP, whatsappLink } from "@/lib/pricing";
 import { useCart, MAX_QTY } from "@/lib/cart";
+import { savedFaqs } from "@/lib/catalog";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/$slug")({
@@ -74,7 +75,7 @@ function ProductPage() {
     { k: "usage", label: t("طريقة الاستخدام", "How to use"), v: product.usage_instructions },
   ].filter((d) => !isPlaceholder(d.v));
 
-  const faqs = [
+  const faqs = savedFaqs(s?.faqs,lang).length ? savedFaqs(s?.faqs,lang) : [
     { q: t("إزاي أطلب؟", "How do I order?"), a: t("اختار الحجم والكمية، ضيفهم للسلة، واكمل بياناتك في صفحة الطلب. هنتواصل معاك لتأكيد الطلب.", "Pick a size and quantity, add to cart and complete checkout. We'll call to confirm.") },
     { q: t("إيه طرق الدفع المتاحة؟", "Which payment methods?"), a: s?.cod_enabled ? t("الدفع نقداً عند الاستلام.", "Cash on delivery.") : t("تواصل معنا على واتساب لمعرفة طرق الدفع المتاحة حالياً.", "Contact us on WhatsApp for current payment options.") },
     { q: t("بتوصلوا فين؟", "Where do you deliver?"), a: zones?.length ? zones.map((z) => z.city).join("، ") : t("هيتم الإعلان عن مناطق التوصيل قريباً.", "Delivery areas will be announced soon.") },

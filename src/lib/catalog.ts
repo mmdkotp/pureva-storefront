@@ -9,14 +9,14 @@ export const categoriesQuery = queryOptions({ queryKey: ['categories'], refetchI
 } });
 export function homeSections(value: Json | undefined): { key: string; enabled: boolean }[] {
   if (!Array.isArray(value)) return [];
-  return value.flatMap(v => v && typeof v === 'object' && !Array.isArray(v) && typeof v.key === 'string' ? [{ key: v.key, enabled: v.enabled !== false }] : []);
+  return value.flatMap(v => v && typeof v === 'object' && !Array.isArray(v) && typeof v['key'] === 'string' ? [{ key: v['key'], enabled: v['enabled'] !== false }] : []);
 }
 export function savedFaqs(value: Json | undefined, lang: 'ar' | 'en'): { q: string; a: string }[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap(v => {
     if (!v || typeof v !== 'object' || Array.isArray(v)) return [];
-    const q = lang === 'en' && v.q_en ? v.q_en : v.q;
-    const a = lang === 'en' && v.a_en ? v.a_en : v.a;
+    const q = lang === 'en' && v['q_en'] ? v['q_en'] : v['q'];
+    const a = lang === 'en' && v['a_en'] ? v['a_en'] : v['a'];
     return typeof q === 'string' && typeof a === 'string' && q.trim() && a.trim() ? [{ q, a }] : [];
   });
 }

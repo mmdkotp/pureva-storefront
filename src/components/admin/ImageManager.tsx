@@ -28,7 +28,7 @@ export function ImageManager({ value, onChange, single = false }: { value: strin
     } catch (e) { toast.error(e instanceof Error ? e.message : t('تعذر رفع الصورة', 'Upload failed')); }
     finally { setBusy(false); }
   };
-  const move = (i: number, d: number) => { const next = [...value]; const j = i + d; if (j < 0 || j >= next.length) return; [next[i], next[j]] = [next[j], next[i]]; onChange(next); };
+  const move = (i: number, d: number) => { const next = [...value]; const j = i + d; if (j < 0 || j >= next.length) return; const a = next[i], b = next[j]; if (!a || !b) return; next[i] = b; next[j] = a; onChange(next); };
   return <div className="space-y-3">
     <div className="flex flex-wrap gap-3">{value.map((url, i) => <div key={`${url}-${i}`} className="w-28 border p-2">
       <img src={mediaUrl(url)} alt="" className="aspect-square w-full object-cover" />
