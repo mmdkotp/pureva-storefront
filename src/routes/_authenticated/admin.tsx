@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LogOut } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,13 @@ import { ProductsPanel } from "@/components/admin/ProductsPanel";
 import { ShippingPanel } from "@/components/admin/ShippingPanel";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
 import { InquiriesPanel } from "@/components/admin/InquiriesPanel";
+import { CategoriesPanel } from "@/components/admin/CategoriesPanel";
+import { InventoryPanel } from "@/components/admin/InventoryPanel";
+import { CustomersPanel } from "@/components/admin/CustomersPanel";
+import { CouponsPanel } from "@/components/admin/CouponsPanel";
+import { SecurityPanel } from "@/components/admin/SecurityPanel";
+import { DashboardStats } from "@/components/admin/DashboardStats";
+import { ContentPanel } from "@/components/admin/ContentPanel";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -30,6 +37,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function AdminPage() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const role = useQuery({
     queryKey: ["is-admin", user.id],
     queryFn: async () => {
@@ -40,8 +48,10 @@ function AdminPage() {
   });
 
   const signOut = async () => {
+    await qc.cancelQueries();
+    qc.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth" });
+    navigate({ to: "/auth", replace: true });
   };
 
   return (
@@ -65,18 +75,31 @@ function AdminPage() {
           </div>
         ) : (
           <Tabs defaultValue="orders" dir="rtl">
+            <DashboardStats />
             <TabsList className="mb-6 flex h-auto flex-wrap justify-start">
               <TabsTrigger value="orders">الطلبات</TabsTrigger>
               <TabsTrigger value="products">المنتجات والمخزون</TabsTrigger>
               <TabsTrigger value="shipping">الشحن</TabsTrigger>
               <TabsTrigger value="inquiries">الاستفسارات والجملة</TabsTrigger>
               <TabsTrigger value="settings">إعدادات المتجر</TabsTrigger>
+              <TabsTrigger value="categories">الأقسام</TabsTrigger>
+              <TabsTrigger value="inventory">حركة المخزون</TabsTrigger>
+              <TabsTrigger value="customers">العملاء</TabsTrigger>
+              <TabsTrigger value="coupons">الكوبونات</TabsTrigger>
+              <TabsTrigger value="content">محتوى الموقع</TabsTrigger>
+              <TabsTrigger value="security">كلمة المرور</TabsTrigger>
             </TabsList>
             <TabsContent value="orders"><OrdersPanel /></TabsContent>
             <TabsContent value="products"><ProductsPanel /></TabsContent>
             <TabsContent value="shipping"><ShippingPanel /></TabsContent>
             <TabsContent value="inquiries"><InquiriesPanel /></TabsContent>
             <TabsContent value="settings"><SettingsPanel /></TabsContent>
+            <TabsContent value="categories"><CategoriesPanel /></TabsContent>
+            <TabsContent value="inventory"><InventoryPanel /></TabsContent>
+            <TabsContent value="customers"><CustomersPanel /></TabsContent>
+            <TabsContent value="coupons"><CouponsPanel /></TabsContent>
+            <TabsContent value="content"><ContentPanel /></TabsContent>
+            <TabsContent value="security"><SecurityPanel /></TabsContent>
           </Tabs>
         )}
       </div>
