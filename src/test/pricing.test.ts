@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  effectivePrice,
   computeShipping,
   computeSubtotal,
   isValidEgyptPhone,
@@ -43,4 +44,11 @@ describe("Egyptian phone numbers", () => {
   it("builds wa.me links with the 20 country code", () => {
     expect(whatsappLink("01012345678")).toBe("https://wa.me/201012345678");
   });
+});
+
+describe("discounted catalog price", () => {
+  it("uses a configured discounted price", () => { expect(effectivePrice({price:100,sale_price:80})).toBe(80); });
+  it("keeps regular price when no discount exists", () => { expect(effectivePrice({price:100,sale_price:null})).toBe(100); });
+  it("does not accept a discount above regular price", () => { expect(effectivePrice({price:100,sale_price:110})).toBe(100); });
+  it("preserves an unknown price", () => { expect(effectivePrice({price:null,sale_price:null})).toBeNull(); });
 });

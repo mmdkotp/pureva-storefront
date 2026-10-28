@@ -11,18 +11,21 @@ import { Logo } from "@/components/site/Logo";
 import { productsQuery, settingsQuery } from "@/lib/store";
 import { whatsappLink } from "@/lib/pricing";
 import { useI18n } from "@/lib/i18n";
+import { publicStoreMetadata } from "@/lib/store.functions";
 import heroImage from "@/assets/hero-kleantop.jpg";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { category?: string } => typeof search["category"] === "string" ? { category: search["category"] } : {},
-  head: () => ({
+  loader: () => publicStoreMetadata({data:{}}),
+  head: ({loaderData}) => ({
     meta: [
+      ...(loaderData?.settings?.hero_image_url?.startsWith("https://") ? [{property:"og:image",content:loaderData.settings.hero_image_url},{name:"twitter:image",content:loaderData.settings.hero_image_url}] : []),
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
-      { title: "KLEANTOP كلين توب — سائل غسيل أطباق | نضافة تفرق، ولمعة تدوم" },
-      { name: "description", content: "اطلب سائل غسيل الأطباق كلين توب أونلاين مع توصيل داخل مصر والدفع عند الاستلام." },
-      { property: "og:title", content: "KLEANTOP كلين توب — سائل غسيل أطباق" },
-      { property: "og:description", content: "نضافة تفرق، ولمعة تدوم. اطلب كلين توب أونلاين." },
+      { title: loaderData?.settings?.seo_title || "KLEANTOP كلين توب — سائل غسيل أطباق" },
+      { name: "description", content: loaderData?.settings?.seo_description || "اطلب سائل غسيل الأطباق كلين توب أونلاين مع توصيل داخل مصر والدفع عند الاستلام." },
+      { property: "og:title", content: loaderData?.settings?.seo_title || "KLEANTOP كلين توب — سائل غسيل أطباق" },
+      { property: "og:description", content: loaderData?.settings?.seo_description || "نضافة تفرق، ولمعة تدوم. اطلب كلين توب أونلاين." },
     ],
   }),
   component: Index,
