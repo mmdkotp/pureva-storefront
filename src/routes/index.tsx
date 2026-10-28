@@ -13,6 +13,7 @@ import { whatsappLink } from "@/lib/pricing";
 import { useI18n } from "@/lib/i18n";
 import { publicStoreMetadata } from "@/lib/store.functions";
 import heroImage from "@/assets/hero-kleantop.jpg";
+import { catalogMatches } from "@/lib/variants";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { category?: string } => typeof search["category"] === "string" ? { category: search["category"] } : {},
@@ -42,7 +43,7 @@ function Index() {
   const products = useQuery(productsQuery);
   const s = settings.data;
   const sections = homeSections(s?.home_sections);
-  const list = (products.data ?? []).filter(p => (!category || p.category_id===category) && `${p.name_ar} ${p.name_en ?? ""}`.toLowerCase().includes(search.toLowerCase())).sort((a,b)=>Number(b.featured)-Number(a.featured));
+  const list = (products.data ?? []).filter(p => (!category || p.category_id===category) && catalogMatches(p, search, categories.data?.filter(c => c.id === p.category_id).map(c => `${c.name_ar} ${c.name_en ?? ''}`).join(' ') ?? '')).sort((a,b)=>Number(b.featured)-Number(a.featured));
   const layout = (key: string) => { const i = sections.findIndex(x=>x.key===key); return {order: i < 0 ? 99 : i, display: i >= 0 && !sections[i]?.enabled ? "none" : undefined}; };
   const first = products.data?.[0];
   const benefits = (products.data ?? []).flatMap((p) => p.benefits).filter(Boolean);
@@ -100,7 +101,7 @@ function Index() {
         <div className="mb-12 flex items-end justify-between gap-4">
           <div>
             <p className="eyebrow">{t("منتجاتنا", "Our products")}</p>
-            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{t("اختار الحجم المناسب", "Choose your size")}</h2>
+            <h2 className="mt-3 text-3xl font-semibold md:text-4xl">{t("اختار اللي يناسب بيتك", "Find your household essentials")}</h2>
           </div>
         </div>
         <div className="mb-8 flex flex-wrap gap-3"><input className="field max-w-xs" aria-label={t("بحث المنتجات","Search products")} placeholder={t("بحث المنتجات","Search products")} value={search} onChange={e=>setSearch(e.target.value)} /><select className="field w-48" aria-label={t("القسم","Category")} value={category} onChange={e=>setCategory(e.target.value)}><option value="">{t("كل الأقسام","All categories")}</option>{categories.data?.map(c=><option key={c.id} value={c.id}>{lang==="en" && c.name_en ? c.name_en : c.name_ar}</option>)}</select></div>
@@ -109,7 +110,7 @@ function Index() {
         ) : products.isError ? (
           <ErrorState />
         ) : !list.length ? (
-          <EmptyState title={t("المنتجات هتتضاف قريباً", "Products coming soon")} />
+          <EmptyState title={search || category ? t("مفيش منتجات مطابقة لاختيارك", "No matching products") : t("المنتجات هتتضاف قريباً", "Products coming soon")} />
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((p) => (
