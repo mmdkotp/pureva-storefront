@@ -610,6 +610,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      normalize_order_items: { Args: { _items: Json }; Returns: Json }
       place_order:
         | {
             Args: {
