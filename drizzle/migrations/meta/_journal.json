@@ -29,6 +29,13 @@
       "when": 1793146955944,
       "tag": "0003_checkout_snapshot_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793147483087,
+      "tag": "0004_expand_product_variants",
+      "breakpoints": true
     }
   ]
 }
