@@ -9,16 +9,19 @@ import { LoadingState, ErrorState, EmptyState } from "@/components/site/States";
 import { isPlaceholder, productImages, productsQuery, settingsQuery, zonesQuery } from "@/lib/store";
 import { effectivePrice, formatEGP, whatsappLink } from "@/lib/pricing";
 import { useCart, MAX_QTY } from "@/lib/cart";
+import { publicStoreMetadata } from "@/lib/store.functions";
 import { savedFaqs } from "@/lib/catalog";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/products/$slug")({
-  head: () => ({
+  loader: ({params}) => publicStoreMetadata({data:{slug:params.slug}}),
+  head: ({loaderData}) => ({
     meta: [
+      ...(loaderData?.product?.images[0]?.startsWith("https://") ? [{property:"og:image",content:loaderData.product.images[0]},{name:"twitter:image",content:loaderData.product.images[0]}] : []),
       { name: "twitter:card", content: "summary_large_image" },
-      { title: "سائل غسيل الأطباق كلين توب — اطلب أونلاين | KLEANTOP" },
+      { title: `${loaderData?.product?.name_ar || "المنتج"} | ${loaderData?.settings?.brand_name || "KLEANTOP"}` },
       { name: "description", content: "تفاصيل سائل غسيل الأطباق كلين توب: الأحجام والأسعار بالجنيه المصري وطريقة الاستخدام والشحن." },
-      { property: "og:title", content: "سائل غسيل الأطباق كلين توب" },
+      { property: "og:title", content: loaderData?.product?.name_ar || "منتجات كلين توب" },
       { property: "og:description", content: "الأحجام والأسعار وطريقة الطلب والتوصيل." },
       { property: "og:type", content: "product" },
     ],
