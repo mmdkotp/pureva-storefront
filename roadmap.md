@@ -1,5 +1,6 @@
-- [ ] Rename branding, including existing mockup photos, without redesigning storefront.
-- [ ] Extend persisted catalog, categories, inventory, orders, coupons, content and settings.
-- [ ] Connect Arabic admin tools and storefront to saved data.
-- [ ] Securely provision the requested admin, disable public registration, add password change and logout.
-- [ ] Verify login, admin changes, checkout calculations, stock transactions and historical snapshots.
+- [x] Rename branding, including existing mockup photos, without redesigning storefront.
+- [x] Extend persisted catalog, categories, inventory, orders, coupons, content and settings.
+- [x] Connect Arabic admin tools and storefront to saved data.
+- [x] Securely provision the requested admin, disable public registration, add password change and logout.
+- [x] Verify initial-password login, all admin tabs, storefront branding, mobile overflow and pricing tests.
+- [ ] Verify real admin save/upload/category workflows, coupon checkout, cancellation restoration, historical snapshots and password change end-to-end. Paused at the user's requested credit check-in wrap-up.
