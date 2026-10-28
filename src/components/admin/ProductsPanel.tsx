@@ -152,6 +152,10 @@ function ProductEditor({ product, wholesale, categories, onSaved }: { product: P
 
 function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesale?: WP | undefined; onSaved: () => void }) {
   const [label, setLabel] = useState(variant.size_label);
+  const [fragrance, setFragrance] = useState(variant.fragrance ?? "");
+  const [fragranceEn, setFragranceEn] = useState(variant.fragrance_en ?? "");
+  const [sku, setSku] = useState(variant.sku ?? "");
+  const [variantImages, setVariantImages] = useState(variant.images ?? []);
   const [price, setPrice] = useState(variant.price?.toString() ?? "");
   const [sale, setSale] = useState(variant.sale_price?.toString() ?? "");
   const [low, setLow] = useState(String(variant.low_stock_threshold));
@@ -161,14 +165,15 @@ function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesa
   const [wMin, setWMin] = useState(String(wholesale?.min_quantity ?? 1));
 
   const save = async () => {
+    if (sku.trim() && !/^[A-Za-z0-9_-]{1,80}$/.test(sku.trim())) return void toast.error("كود المنتج حروف إنجليزية وأرقام وشرطة فقط");
     const sp = numOrNull(sale), lt = Number(low);
     if ((sp != null && (!Number.isFinite(sp) || sp < 0 || numOrNull(price) == null || sp > Number(price))) || !Number.isInteger(lt) || lt < 0) return void toast.error("راجع السعر المخفض وحد المخزون المنخفض");
     const pr = numOrNull(price), st = Number(stock), wp = numOrNull(wPrice), wm = Number(wMin);
     if (!label.trim()) return void toast.error("اكتب الحجم");
     if ((pr != null && (isNaN(pr) || pr < 0)) || isNaN(st) || st < 0 || !Number.isInteger(st)) return void toast.error("السعر أو المخزون غير صحيح");
     if (wp != null && (isNaN(wp) || wp < 0 || !Number.isInteger(wm) || wm < 1)) return void toast.error("سعر الجملة غير صحيح");
-    const { error } = await supabase.from("product_variants").update({ size_label: label.trim(), price: pr, sale_price: sp, low_stock_threshold: lt, stock: st, active }).eq("id", variant.id);
-    if (error) return void toast.error("تعذر الحفظ");
+    const { error } = await supabase.from("product_variants").update({ size_label: label.trim(), fragrance: fragrance.trim() || null, fragrance_en: fragranceEn.trim() || null, sku: sku.trim() || null, images: variantImages, price: pr, sale_price: sp, low_stock_threshold: lt, stock: st, active }).eq("id", variant.id);
+    if (error) return void toast.error(error.code === "23505" ? "كود المنتج مستخدم بالفعل" : "تعذر الحفظ");
     const w = wp == null
       ? await supabase.from("wholesale_prices").delete().eq("variant_id", variant.id)
       : await supabase.from("wholesale_prices").upsert({ variant_id: variant.id, price: wp, min_quantity: wm });
@@ -185,6 +190,9 @@ function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesa
 
   return (
     <div className="grid items-end gap-2 border p-3 sm:grid-cols-2 lg:grid-cols-4">
+      <FormField label="رائحة هذا الحجم"><input className="field h-9" value={fragrance} onChange={e=>setFragrance(e.target.value)} /></FormField>
+      <FormField label="الرائحة بالإنجليزي"><input className="field h-9" value={fragranceEn} onChange={e=>setFragranceEn(e.target.value)} /></FormField>
+      <FormField label="كود المنتج (SKU)"><input className="field h-9" dir="ltr" placeholder={variant.id} value={sku} onChange={e=>setSku(e.target.value)} /></FormField>
       <FormField label="الحجم"><input className="field h-9" value={label} onChange={(e) => setLabel(e.target.value)} /></FormField>
       <FormField label="السعر (ج.م)"><input className="field h-9" inputMode="decimal" placeholder="غير محدد" value={price} onChange={(e) => setPrice(e.target.value)} /></FormField>
       <FormField label="السعر المخفض"><input className="field h-9" inputMode="decimal" value={sale} onChange={e => setSale(e.target.value)} /></FormField>
@@ -194,9 +202,10 @@ function VariantRow({ variant, wholesale, onSaved }: { variant: Variant; wholesa
       <FormField label="حد أدنى جملة"><input className="field h-9" inputMode="numeric" value={wMin} onChange={(e) => setWMin(e.target.value)} /></FormField>
       <div className="flex items-center gap-2 pb-1">
         <Switch checked={active} onCheckedChange={setActive} aria-label="مفعل" />
-        <Button size="sm" onClick={save}><Save /></Button>
+        <Button size="sm" aria-label="حفظ الحجم" onClick={save}><Save /></Button>
         <Button size="sm" variant="ghost" onClick={remove} aria-label="حذف"><Trash2 /></Button>
       </div>
+      <div className="sm:col-span-2 lg:col-span-4"><ImageManager value={variantImages} onChange={setVariantImages} /></div>
     </div>
   );
 }

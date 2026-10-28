@@ -9,6 +9,8 @@ export type CartDetailLine = {
   variantId: string;
   quantity: number;
   sizeLabel: string;
+  fragrance: string | null;
+  sku: string | null;
   price: number | null;
   stock: number;
   productName: string;
@@ -27,7 +29,7 @@ export function useCartDetails() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("product_variants")
-        .select("id, size_label, price, sale_price, stock, active, products(name_ar, name_en, slug, images, active, archived)")
+        .select("id, size_label, fragrance, sku, images, price, sale_price, stock, active, products(name_ar, name_en, slug, images, active, archived)")
         .in("id", ids);
       if (error) throw error;
       return data;
@@ -41,13 +43,15 @@ export function useCartDetails() {
       {
         variantId: l.variantId,
         quantity: l.quantity,
-        sizeLabel: v.size_label,
+        sizeLabel: [v.fragrance, v.size_label].filter(Boolean).join(" · "),
+        fragrance: v.fragrance,
+        sku: v.sku,
         price: effectivePrice(v),
         stock: v.stock,
         productName: v.products.name_ar,
         productNameEn: v.products.name_en,
         slug: v.products.slug,
-        image: mediaUrl(v.products.images?.[0]) ?? PRODUCT_FALLBACK_IMAGE,
+        image: mediaUrl(v.images?.[0] ?? v.products.images?.[0]) ?? PRODUCT_FALLBACK_IMAGE,
       },
     ];
   });

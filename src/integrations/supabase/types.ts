@@ -178,6 +178,7 @@ export type Database = {
       order_items: {
         Row: {
           discount_amount: number
+          fragrance: string | null
           id: string
           order_id: string
           product_name: string
@@ -186,9 +187,11 @@ export type Database = {
           size_label: string
           unit_price: number
           variant_id: string | null
+          variant_sku: string | null
         }
         Insert: {
           discount_amount?: number
+          fragrance?: string | null
           id?: string
           order_id: string
           product_name: string
@@ -197,9 +200,11 @@ export type Database = {
           size_label: string
           unit_price: number
           variant_id?: string | null
+          variant_sku?: string | null
         }
         Update: {
           discount_amount?: number
+          fragrance?: string | null
           id?: string
           order_id?: string
           product_name?: string
@@ -208,6 +213,7 @@ export type Database = {
           size_label?: string
           unit_price?: number
           variant_id?: string | null
+          variant_sku?: string | null
         }
         Relationships: [
           {
@@ -290,36 +296,48 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          fragrance: string | null
+          fragrance_en: string | null
           id: string
+          images: string[]
           low_stock_threshold: number
           price: number | null
           product_id: string
           sale_price: number | null
           size_label: string
+          sku: string | null
           sort_order: number
           stock: number
         }
         Insert: {
           active?: boolean
           created_at?: string
+          fragrance?: string | null
+          fragrance_en?: string | null
           id?: string
+          images?: string[]
           low_stock_threshold?: number
           price?: number | null
           product_id: string
           sale_price?: number | null
           size_label: string
+          sku?: string | null
           sort_order?: number
           stock?: number
         }
         Update: {
           active?: boolean
           created_at?: string
+          fragrance?: string | null
+          fragrance_en?: string | null
           id?: string
+          images?: string[]
           low_stock_threshold?: number
           price?: number | null
           product_id?: string
           sale_price?: number | null
           size_label?: string
+          sku?: string | null
           sort_order?: number
           stock?: number
         }

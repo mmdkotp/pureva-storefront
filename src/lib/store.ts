@@ -7,6 +7,10 @@ export type Variant = {
   id: string;
   product_id: string;
   size_label: string;
+  fragrance: string | null;
+  fragrance_en: string | null;
+  sku: string | null;
+  images: string[];
   price: number | null;
   sale_price: number | null;
   low_stock_threshold: number;

@@ -10,6 +10,8 @@ import { isPlaceholder, productImages, productsQuery, settingsQuery, zonesQuery 
 import { effectivePrice, formatEGP, whatsappLink } from "@/lib/pricing";
 import { useCart, MAX_QTY } from "@/lib/cart";
 import { publicStoreMetadata } from "@/lib/store.functions";
+import { fragranceKey, fragranceOptions, selectFragranceVariant } from "@/lib/variants";
+import { mediaUrl } from "@/lib/media";
 import { savedFaqs } from "@/lib/catalog";
 import { useI18n } from "@/lib/i18n";
 
@@ -20,7 +22,7 @@ export const Route = createFileRoute("/products/$slug")({
       ...(loaderData?.product?.images[0]?.startsWith("https://") ? [{property:"og:image",content:loaderData.product.images[0]},{name:"twitter:image",content:loaderData.product.images[0]}] : []),
       { name: "twitter:card", content: "summary_large_image" },
       { title: `${loaderData?.product?.name_ar || "المنتج"} | ${loaderData?.settings?.brand_name || "KLEANTOP"}` },
-      { name: "description", content: "تفاصيل سائل غسيل الأطباق كلين توب: الأحجام والأسعار بالجنيه المصري وطريقة الاستخدام والشحن." },
+      { name: "description", content: "تفاصيل منتجات كلين توب: الروائح والأحجام والأسعار بالجنيه المصري وطريقة الاستخدام والشحن." },
       { property: "og:title", content: loaderData?.product?.name_ar || "منتجات كلين توب" },
       { property: "og:description", content: "الأحجام والأسعار وطريقة الطلب والتوصيل." },
       { property: "og:type", content: "product" },
@@ -43,7 +45,7 @@ function ProductPage() {
   const [imgIdx, setImgIdx] = useState(0);
 
   useEffect(() => {
-    if (product && !variantId) setVariantId(product.product_variants[0]?.id ?? null);
+    if (product && !product.product_variants.some(v => v.id === variantId)) { setVariantId(product.product_variants.find(v => v.stock > 0 && v.price != null)?.id ?? product.product_variants[0]?.id ?? null); setImgIdx(0); setQty(1); }
   }, [product, variantId]);
 
   if (products.isLoading) return <LoadingState />;
@@ -57,8 +59,12 @@ function ProductPage() {
       </div>
     );
 
-  const images = productImages(product);
   const variant = product.product_variants.find((v) => v.id === variantId);
+  const images = variant?.images.length ? variant.images.map(src => mediaUrl(src) ?? productImages(product)[0] ?? "") : productImages(product);
+  const fragrances = fragranceOptions(product.product_variants);
+  const currentFragrance = variant ? fragranceKey(variant) : "";
+  const sizeVariants = product.product_variants.filter(v => fragranceKey(v) === currentFragrance);
+  const chooseVariant = (id: string | undefined) => {setVariantId(id ?? null);setImgIdx(0);setQty(1);};
   const name = lang === "en" && product.name_en ? product.name_en : product.name_ar;
   const canBuy = !!variant && variant.price != null && variant.stock > 0;
   const wa = whatsappLink(s?.whatsapp, `${t("استفسار عن", "Inquiry about")} ${product.name_ar}${variant ? ` - ${variant.size_label}` : ""}`);
@@ -66,7 +72,9 @@ function ProductPage() {
 
   const addToCart = (goToCart: boolean) => {
     if (!variant || !canBuy) return;
-    const qtyOk = Math.min(qty, variant.stock);
+    const inCart = cart.lines.find(l => l.variantId === variant.id)?.quantity ?? 0;
+    const qtyOk = Math.min(qty, variant.stock - inCart, MAX_QTY - inCart);
+    if (qtyOk < 1) return void toast.error(t("الكمية المتاحة موجودة بالفعل في السلة", "Available quantity is already in your cart"));
     cart.add(variant.id, qtyOk);
     toast.success(t("اتضاف للسلة", "Added to cart"));
     if (goToCart) navigate({ to: "/cart" });
@@ -94,19 +102,19 @@ function ProductPage() {
         {/* Gallery */}
         <div>
           <div className="aspect-square overflow-hidden border bg-secondary">
-            <img src={images[imgIdx]} alt={name} width={1024} height={1024} className="size-full object-cover" />
+            <img src={images[imgIdx] ?? images[0]} alt={name} width={1024} height={1024} className="size-full object-cover" />
           </div>
           {images.length > 1 && (
             <div className="mt-3 grid grid-cols-5 gap-2">
               {images.map((src, i) => (
-                <button
+                <Button variant="ghost"
                   key={src}
                   onClick={() => setImgIdx(i)}
                   className={`aspect-square overflow-hidden border ${i === imgIdx ? "border-foreground" : ""}`}
                   aria-label={`${t("صورة", "Image")} ${i + 1}`}
                 >
                   <img src={src} alt="" loading="lazy" className="size-full object-cover" />
-                </button>
+                </Button>
               ))}
             </div>
           )}
@@ -125,33 +133,19 @@ function ProductPage() {
             {variant?.price != null ? formatEGP(effectivePrice(variant) ?? 0, lang) : <span className="text-lg text-muted-foreground">{t("السعر يُعلن قريباً", "Price coming soon")}</span>}
           </p>
 
-          {product.product_variants.length > 0 && (
-            <fieldset className="mt-8">
-              <legend className="mb-3 text-sm font-medium">{t("الحجم", "Size")}</legend>
-              <div className="flex flex-wrap gap-2">
-                {product.product_variants.map((v) => (
-                  <button
-                    key={v.id}
-                    onClick={() => setVariantId(v.id)}
-                    aria-pressed={v.id === variantId}
-                    className={`border px-4 py-2 text-sm transition-colors ${v.id === variantId ? "border-foreground bg-primary text-primary-foreground" : "hover:border-foreground"}`}
-                  >
-                    {v.size_label}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          )}
+          {fragrances.some(Boolean) && <fieldset className="mt-8"><legend className="mb-3 text-sm font-medium">{t("الرائحة", "Fragrance")}</legend><div className="flex flex-wrap gap-2">{fragrances.map(f => <Button key={f} variant={f===currentFragrance ? "default" : "outline"} aria-pressed={f===currentFragrance} onClick={() => chooseVariant(selectFragranceVariant(product.product_variants, f, variant?.size_label)?.id)}>{f || t("بدون رائحة محددة", "Unspecified fragrance")}</Button>)}</div></fieldset>}
+          {sizeVariants.length > 0 && <fieldset className="mt-8"><legend className="mb-3 text-sm font-medium">{t("الحجم", "Size")}</legend><div className="flex flex-wrap gap-2">{sizeVariants.map(v => <Button key={v.id} variant={v.id===variantId ? "default" : "outline"} aria-pressed={v.id===variantId} onClick={() => chooseVariant(v.id)}>{v.size_label}</Button>)}</div></fieldset>}
+          {variant?.sku && <p className="mt-4 text-xs text-muted-foreground">{t("كود المنتج", "SKU")}: <span dir="ltr">{variant.sku}</span></p>}
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <div className="flex h-12 items-center border">
-              <button className="grid h-full w-12 place-items-center" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label={t("تقليل", "Decrease")}>
+              <Button variant="ghost" className="grid h-full w-12 place-items-center" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label={t("تقليل", "Decrease")}>
                 <Minus className="size-4" />
-              </button>
+              </Button>
               <span className="w-10 text-center" aria-live="polite">{qty}</span>
-              <button className="grid h-full w-12 place-items-center" onClick={() => setQty((q) => Math.min(MAX_QTY, q + 1))} aria-label={t("زيادة", "Increase")}>
+              <Button variant="ghost" className="grid h-full w-12 place-items-center" onClick={() => setQty((q) => Math.min(MAX_QTY, variant?.stock ?? 1, q + 1))} aria-label={t("زيادة", "Increase")}>
                 <Plus className="size-4" />
-              </button>
+              </Button>
             </div>
             <Button size="lg" className="flex-1" disabled={!canBuy} onClick={() => addToCart(true)}>
               {t("اطلب دلوقتي", "Order now")}
