@@ -4,6 +4,6 @@
 - [x] Securely provision the requested admin, disable public registration, add password change and logout.
 - [x] Verify initial-password login, all admin tabs, storefront branding, mobile overflow and pricing tests.
 - [ ] Verify real admin save/upload/category workflows, coupon checkout, cancellation restoration, historical snapshots and password change end-to-end. Paused at the user's requested credit check-in wrap-up.
-- [ ] Expand the existing catalog with the six requested categories and per-variant fragrance, SKU and images; preserve existing colors and do not seed sample fragrances as real products.
-- [ ] Integrate fragrance/size selection, category/fragrance search, starting prices and exact-variant cart labels; extend existing admin fields only.
-- [ ] Test catalog filtering, selection, quantity totals and desktop/mobile layouts.
+- [x] Expand the existing catalog with the six requested categories and per-variant fragrance, SKU and images; preserve existing colors and do not seed sample fragrances as real products.
+- [x] Integrate fragrance/size selection, category/fragrance search, starting prices and exact-variant cart labels; extend existing admin fields only.
+- [x] Test catalog filtering, selection, quantity totals and desktop/mobile layouts; 22 tests passed and temporary verification product removed.
