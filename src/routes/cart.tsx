@@ -62,17 +62,17 @@ function CartPage() {
                     </div>
                     <div className="mt-auto flex items-center justify-between">
                       <div className="flex h-9 items-center border">
-                        <button className="grid h-full w-9 place-items-center" onClick={() => cart.setQuantity(l.variantId, l.quantity - 1)} aria-label={t("تقليل", "Decrease")}>
+                        <Button variant="ghost" disabled={l.quantity <= 1} className="h-full w-9 p-0" onClick={() => cart.setQuantity(l.variantId, l.quantity - 1)} aria-label={t("تقليل", "Decrease")}>
                           <Minus className="size-3.5" />
-                        </button>
+                        </Button>
                         <span className="w-8 text-center text-sm">{l.quantity}</span>
-                        <button className="grid h-full w-9 place-items-center" onClick={() => cart.setQuantity(l.variantId, l.quantity + 1)} aria-label={t("زيادة", "Increase")}>
+                        <Button variant="ghost" disabled={l.quantity >= l.stock} className="h-full w-9 p-0" onClick={() => cart.setQuantity(l.variantId, l.quantity + 1)} aria-label={t("زيادة", "Increase")}>
                           <Plus className="size-3.5" />
-                        </button>
+                        </Button>
                       </div>
-                      <button onClick={() => cart.remove(l.variantId)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-destructive">
+                      <Button variant="ghost" onClick={() => cart.remove(l.variantId)} className="gap-1 text-sm text-muted-foreground hover:text-destructive">
                         <Trash2 className="size-4" /> {t("حذف", "Remove")}
-                      </button>
+                      </Button>
                     </div>
                     {l.price == null && <p className="text-xs text-destructive">{t("السعر لم يُحدد بعد", "Price not set yet")}</p>}
                     {l.price != null && l.stock < l.quantity && (
