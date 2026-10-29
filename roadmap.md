@@ -7,3 +7,5 @@
 - [x] Expand the existing catalog with the six requested categories and per-variant fragrance, SKU and images; preserve existing colors and do not seed sample fragrances as real products.
 - [x] Integrate fragrance/size selection, category/fragrance search, starting prices and exact-variant cart labels; extend existing admin fields only.
 - [x] Test catalog filtering, selection, quantity totals and desktop/mobile layouts; 22 tests passed and temporary verification product removed.
+- [ ] Restore the storefront homepage route and verify it no longer returns 404.
+- [ ] Rename the header entry to Products and nest live categories inside its desktop/mobile menu.
