@@ -88,7 +88,7 @@ export function OrdersPanel() {
                   <ul className="divide-y border-y">
                     {o.order_items.map((i) => (
                       <li key={i.id} className="flex justify-between py-2">
-                        <span>{i.product_name} · {i.size_label} × {i.quantity}</span>
+                        <span>{i.product_name} · {[i.fragrance,i.size_label].filter(Boolean).join(' · ')} × {i.quantity}{i.variant_sku && <small className="ms-2" dir="ltr">{i.variant_sku}</small>}</span>
                         {!packing && <span>{formatEGP(i.unit_price * i.quantity)}{i.discount_amount>0 && ` · خصم ${formatEGP(i.discount_amount)}`}</span>}
                       </li>
                     ))}
