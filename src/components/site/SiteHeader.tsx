@@ -3,8 +3,7 @@ import { ShoppingBag, Menu, X, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { categoriesQuery } from "@/lib/catalog";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { useCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
@@ -15,19 +14,40 @@ export function SiteHeader() {
   const categories = useQuery(categoriesQuery);
   const [open, setOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
+  const [desktopProductsOpen, setDesktopProductsOpen] = useState(false);
+  const desktopMenu = useRef<HTMLDivElement>(null);
+  const desktopTrigger = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!desktopProductsOpen) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Node && !desktopMenu.current?.contains(event.target)) setDesktopProductsOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setDesktopProductsOpen(false);
+      desktopTrigger.current?.focus();
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [desktopProductsOpen]);
 
   const productMenu = (
-    <DropdownMenu dir={lang === "ar" ? "rtl" : "ltr"}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-auto gap-2 p-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground">
+    <div ref={desktopMenu} className="relative" onBlur={event => {
+      if (!event.currentTarget.contains(event.relatedTarget)) setDesktopProductsOpen(false);
+    }}>
+        <Button ref={desktopTrigger} variant="ghost" aria-expanded={desktopProductsOpen} aria-controls="desktop-product-categories" onClick={() => setDesktopProductsOpen(value => !value)} className="h-auto gap-2 p-0 text-sm font-normal text-muted-foreground hover:bg-transparent hover:text-foreground">
           {t("المنتجات", "Products")}<ChevronDown className="size-4" />
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" sideOffset={16} className="w-64">
-        <DropdownMenuItem asChild><Link to="/" search={{}} hash="products">{t("كل المنتجات", "All products")}</Link></DropdownMenuItem>
-        {categories.data?.map(c => <DropdownMenuItem key={c.id} asChild><Link to="/" search={{ category: c.id }} hash="products">{lang === "en" && c.name_en ? c.name_en : c.name_ar}</Link></DropdownMenuItem>)}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      {desktopProductsOpen && <nav id="desktop-product-categories" aria-label={t("أقسام المنتجات", "Product categories")} className="absolute start-0 top-full z-50 mt-4 w-64 rounded-md border bg-popover p-1 text-popover-foreground shadow-md">
+        <Link to="/" search={{}} hash="products" onClick={() => setDesktopProductsOpen(false)} className="block rounded-sm px-2 py-2 hover:bg-accent focus-visible:bg-accent">{t("كل المنتجات", "All products")}</Link>
+        {categories.data?.map(c => <Link key={c.id} to="/" search={{ category: c.id }} hash="products" onClick={() => setDesktopProductsOpen(false)} className="block rounded-sm px-2 py-2 hover:bg-accent focus-visible:bg-accent">{lang === "en" && c.name_en ? c.name_en : c.name_ar}</Link>)}
+      </nav>}
+    </div>
   );
 
   const links = [
