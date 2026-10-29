@@ -20,3 +20,4 @@
 - Coupons are evaluated through `quote_order` and redeemed under row locks in `place_order`; storefront estimates never authorize a discount.
 - Public metadata reads use a publishable server client with anonymous RLS; no admin client is used for normal store reads.
 - A variant owns fragrance, size, SKU, images, price and stock; cart identity remains its UUID, and order-item triggers snapshot fragrance and SKU so later catalog changes cannot rewrite order details.
+- The homepage must export the TanStack index Route and reuse the shared catalog, settings and cart modules; standalone hash-router apps bypass the storefront and leave `/` unmatched.
